@@ -30,6 +30,7 @@
 #include "Util/Util.h"
 
 #include <mutex>
+#include <type_traits>
 
 char const* MAP_MAGIC         = "MAPS";
 char const* MAP_VERSION_MAGIC = "z1.4";
@@ -565,14 +566,14 @@ GridMapLiquidStatus GridMap::getLiquidStatus(float x, float y, float z, uint8 Re
         uint32 liqTypeIdx = liquidEntry->Type;
         if (entry < 21)
         {
-            if (AreaTableEntry const* area = sAreaStore.LookupEntry(getArea(x, y)))
+            if (auto area = sAreaStore.LookupEntry(getArea(x, y)))
             {
-                uint32 overrideLiquid = area->LiquidTypeOverride;
-                if (!overrideLiquid && area->zone)
+                uint32 overrideLiquid = area->GetLiquidTypeOverride();
+                if (!overrideLiquid && area->GetZone())
                 {
-                    area = GetAreaEntryByAreaID(area->zone);
+                    area = GetAreaEntryByAreaID(area->GetZone());
                     if (area)
-                        overrideLiquid = area->LiquidTypeOverride;
+                        overrideLiquid = area->GetLiquidTypeOverride();
                 }
 
                 if (LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
@@ -945,8 +946,8 @@ AreaNameInfo TerrainInfo::GetAreaName(float x, float y, float z, uint32 langInde
             {
                 // if nothing is in previous entry that mean we should get it from parent area id
                 auto aEntry = GetAreaEntryByAreaID(wmoEntries.front()->areaId);
-                if (aEntry && aEntry->area_name[langIndex][0] != '\0')
-                    nameInfo.areaName = aEntry->area_name[langIndex];
+                if (aEntry && aEntry->GetAreaName(langIndex)[0] != '\0')
+                    nameInfo.areaName = aEntry->GetAreaName(langIndex);
             }
         };
 
@@ -968,10 +969,10 @@ AreaNameInfo TerrainInfo::GetAreaName(float x, float y, float z, uint32 langInde
         if (GridMap* gmap = const_cast<TerrainInfo*>(this)->GetGrid(x, y, true))
         {
             areaflag = gmap->getArea(x, y);
-            AreaTableEntry const* entry = GetAreaEntryByAreaFlagAndMap(areaflag, m_mapId);
+            auto entry = GetAreaEntryByAreaFlagAndMap(areaflag, m_mapId);
 
-            if (entry && entry->area_name[langIndex][0] != '\0')
-                nameInfo.areaName = entry->area_name[langIndex];
+            if (entry && entry->GetAreaName(langIndex)[0] != '\0')
+                nameInfo.areaName = entry->GetAreaName(langIndex);
         }
     }
 
@@ -982,7 +983,7 @@ uint16 TerrainInfo::GetAreaFlag(float x, float y, float z, bool* isOutdoors) con
 {
     uint32 mogpFlags = 0;
     int32 adtId, rootId, groupId;
-    AreaTableEntry const* atEntry = nullptr;
+    std::invoke_result_t<decltype(&GetAreaEntryByAreaID), uint32> atEntry{nullptr};
     bool haveAreaInfo = false;
 
     if (GetAreaInfo(x, y, z, mogpFlags, adtId, rootId, groupId))
@@ -992,7 +993,7 @@ uint16 TerrainInfo::GetAreaFlag(float x, float y, float z, bool* isOutdoors) con
         for (auto wmoEntry : wmoEntries)
         {
             auto areaEntry = GetAreaEntryByAreaID(wmoEntry->areaId);
-            if (areaEntry && areaEntry->mapid == GetMapId())
+            if (areaEntry && areaEntry->GetMapID() == GetMapId())
             {
                 atEntry = areaEntry;
             }
@@ -1001,7 +1002,7 @@ uint16 TerrainInfo::GetAreaFlag(float x, float y, float z, bool* isOutdoors) con
 
     uint16 areaflag;
     if (atEntry)
-        areaflag = atEntry->exploreFlag;
+        areaflag = atEntry->GetExploreFlag();
     else
     {
         if (GridMap* gmap = const_cast<TerrainInfo*>(this)->GetGrid(x, y, true))
@@ -1065,14 +1066,14 @@ GridMapLiquidStatus TerrainInfo::getLiquidStatus(float x, float y, float z, uint
 
                 if (liquid_type && liquid_type < 21)
                 {
-                    if (AreaTableEntry const* area = GetAreaEntryByAreaFlagAndMap(GetAreaFlag(x, y, z), GetMapId()))
+                    if (auto area = GetAreaEntryByAreaFlagAndMap(GetAreaFlag(x, y, z), GetMapId()))
                     {
-                        uint32 overrideLiquid = area->LiquidTypeOverride;
-                        if (!overrideLiquid && area->zone)
+                        uint32 overrideLiquid = area->GetLiquidTypeOverride();
+                        if (!overrideLiquid && area->GetZone())
                         {
-                            area = GetAreaEntryByAreaID(area->zone);
+                            area = GetAreaEntryByAreaID(area->GetZone());
                             if (area)
-                                overrideLiquid = area->LiquidTypeOverride;
+                                overrideLiquid = area->GetLiquidTypeOverride();
                         }
 
                         if (LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
@@ -1388,26 +1389,26 @@ void TerrainManager::UnloadAll()
 
 uint32 TerrainManager::GetAreaIdByAreaFlag(uint16 areaflag, uint32 map_id)
 {
-    AreaTableEntry const* entry = GetAreaEntryByAreaFlagAndMap(areaflag, map_id);
+    auto entry = GetAreaEntryByAreaFlagAndMap(areaflag, map_id);
 
     if (entry)
-        return entry->ID;
+        return entry->GetID();
     return 0;
 }
 
 uint32 TerrainManager::GetZoneIdByAreaFlag(uint16 areaflag, uint32 map_id)
 {
-    AreaTableEntry const* entry = GetAreaEntryByAreaFlagAndMap(areaflag, map_id);
+    auto entry = GetAreaEntryByAreaFlagAndMap(areaflag, map_id);
 
     if (entry)
-        return (entry->zone != 0) ? entry->zone : entry->ID;
+        return (entry->GetZone() != 0) ? entry->GetZone() : entry->GetID();
     return 0;
 }
 
 void TerrainManager::GetZoneAndAreaIdByAreaFlag(uint32& zoneid, uint32& areaid, uint16 areaflag, uint32 map_id)
 {
-    AreaTableEntry const* entry = GetAreaEntryByAreaFlagAndMap(areaflag, map_id);
+    auto entry = GetAreaEntryByAreaFlagAndMap(areaflag, map_id);
 
-    areaid = entry ? entry->ID : 0;
-    zoneid = entry ? ((entry->zone != 0) ? entry->zone : entry->ID) : 0;
+    areaid = entry ? entry->GetID() : 0;
+    zoneid = entry ? ((entry->GetZone() != 0) ? entry->GetZone() : entry->GetID()) : 0;
 }

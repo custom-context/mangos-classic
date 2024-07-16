@@ -3403,8 +3403,8 @@ bool ChatHandler::HandleLinkGraveCommand(char* args)
 
     uint32 zoneId = player->GetZoneId();
 
-    AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(zoneId);
-    if (!areaEntry || areaEntry->zone != 0)
+    auto areaEntry = GetAreaEntryByAreaID(zoneId);
+    if (!areaEntry || areaEntry->GetZone() != 0)
     {
         PSendSysMessage(LANG_COMMAND_GRAVEYARDWRONGZONE, g_id, zoneId);
         SetSentErrorMessage(true);
@@ -4215,8 +4215,8 @@ bool ChatHandler::HandleListAreaTriggerCommand(char* args)
     {
         // Get areatriggers in the same area as the player
         uint32 playerArea = player->GetAreaId();
-        AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(playerArea);
-        PSendSysMessage(LANG_AREATRIGGER_LIST, "area", areaEntry ? areaEntry->area_name[GetSessionDbcLocale()] : "<unknown>");
+        auto areaEntry = GetAreaEntryByAreaID(playerArea);
+        PSendSysMessage(LANG_AREATRIGGER_LIST, "area", areaEntry ? areaEntry->GetAreaName(GetSessionDbcLocale()) : "<unknown>");
 
         for (uint32 id = 0; id < sAreaTriggerStore.GetNumRows(); ++id)
         {

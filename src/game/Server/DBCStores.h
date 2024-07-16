@@ -22,6 +22,7 @@
 #include "Common.h"
 #include "Database/DBCStore.h"
 #include "Server/DBCStructure.h"
+#include "Server/EntryView.h"
 
 #include <list>
 #include <vector>
@@ -41,9 +42,6 @@ int32 GetAreaFlagByAreaID(uint32 area_id);                  // -1 if not found
 uint32 GetAreaFlagByMapId(uint32 mapid);
 
 std::vector<WMOAreaTableEntry const*>& GetWMOAreaTableEntriesByTripple(int32 rootid, int32 adtid, int32 groupid);
-
-AreaTableEntry const* GetAreaEntryByAreaID(uint32 area_id);
-AreaTableEntry const* GetAreaEntryByAreaFlagAndMap(uint32 area_flag, uint32 map_id);
 
 uint32 GetVirtualMapForMapAndZone(uint32 mapid, uint32 zoneId);
 
@@ -73,7 +71,7 @@ typedef std::multimap<uint32, CharSectionsEntry const*> CharSectionsMap;
 extern CharSectionsMap sCharSectionMap;
 #endif
 
-extern DBCStorage <AreaTableEntry>               sAreaStore;// recommend access using functions
+extern DBCStorage <AreaTableEntry, entry::view::AreaView> sAreaStore;// recommend access using functions
 extern DBCStorage <AreaTriggerEntry>             sAreaTriggerStore;
 extern DBCStorage <AuctionHouseEntry>            sAuctionHouseStore;
 extern DBCStorage <BankBagSlotPricesEntry>       sBankBagSlotPricesStore;
@@ -157,4 +155,9 @@ DBCStorage <FactionEntry>               const* GetFactionStore();
 DBCStorage <CreatureDisplayInfoEntry>   const* GetCreatureDisplayStore();
 DBCStorage <EmotesEntry>                const* GetEmotesStore();
 DBCStorage <EmotesTextEntry>            const* GetEmotesTextStore();
+
+
+decltype(sAreaStore)::EntryView GetAreaEntryByAreaID(uint32 area_id);
+decltype(sAreaStore)::EntryView GetAreaEntryByAreaFlagAndMap(uint32 area_flag, uint32 map_id);
+
 #endif

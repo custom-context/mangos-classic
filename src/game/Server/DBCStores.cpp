@@ -28,6 +28,7 @@
 #include "DBCfmt.h"
 
 #include <map>
+#include <optional>
 
 typedef std::map<uint32, uint32> AreaIDByAreaFlag;
 typedef std::map<uint32, uint32> AreaFlagByMapID;
@@ -51,7 +52,7 @@ struct WMOAreaTableTripple
 
 typedef std::map<WMOAreaTableTripple, std::vector<WMOAreaTableEntry const*>> WMOAreaInfoByTripple;
 
-DBCStorage <AreaTableEntry> sAreaStore(AreaTableEntryfmt);
+DBCStorage <AreaTableEntry, entry::view::AreaView> sAreaStore(AreaTableEntryfmt);
 static AreaIDByAreaFlag sAreaIDByAreaFlag;
 static AreaFlagByMapID  sAreaFlagByMapID;                   // for instances without generated *.map files
 
@@ -191,8 +192,8 @@ static bool LoadDBC_assert_print(uint32 fsize, uint32 rsize, const std::string& 
     return false;
 }
 
-template<class T>
-inline void LoadDBC(uint32& availableDbcLocales, BarGoLink& bar, StoreProblemList& errlist, DBCStorage<T>& storage, const std::string& dbc_path, const std::string& filename)
+template<class T, class DBCStorageInnerView>
+inline void LoadDBC(uint32& availableDbcLocales, BarGoLink& bar, StoreProblemList& errlist, DBCStorage<T, DBCStorageInnerView>& storage, const std::string& dbc_path, const std::string& filename)
 {
     // compatibility format and C++ structure sizes
     MANGOS_ASSERT(DBCFileLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T) || LoadDBC_assert_print(DBCFileLoader::GetFormatRecordSize(storage.GetFormat()), sizeof(T), filename));
@@ -252,14 +253,14 @@ void LoadDBCStores(const std::string& dataPath)
     // must be after sAreaStore loading
     for (uint32 i = 1; i <= sAreaStore.GetNumRows(); ++i)   // areaid numbered from 1
     {
-        if (AreaTableEntry const* area = sAreaStore.LookupEntry(i))
+        if (auto area = sAreaStore.LookupEntry(i))
         {
             // fill AreaId->DBC records
-            sAreaIDByAreaFlag.insert(AreaIDByAreaFlag::value_type(uint16(area->exploreFlag), area->ID));
+            sAreaIDByAreaFlag.insert(AreaIDByAreaFlag::value_type(uint16(area->GetExploreFlag()), area->GetID()));
 
             // fill MapId->DBC records ( skip sub zones and continents )
-            if (area->zone == 0 && area->mapid != 0 && area->mapid != 1)
-                sAreaFlagByMapID.insert(AreaFlagByMapID::value_type(area->mapid, area->exploreFlag));
+            if (area->GetZone() == 0 && area->GetMapID() != 0 && area->GetMapID() != 1)
+                sAreaFlagByMapID.insert(AreaFlagByMapID::value_type(area->GetMapID(), area->GetExploreFlag()));
         }
     }
 
@@ -635,25 +636,25 @@ uint32 GetTalentSpellCost(uint32 spellId)
 
 int32 GetAreaFlagByAreaID(uint32 area_id)
 {
-    AreaTableEntry const* AreaEntry = sAreaStore.LookupEntry(area_id);
+    auto AreaEntry = sAreaStore.LookupEntry(area_id);
     if (!AreaEntry)
         return -1;
 
-    return AreaEntry->exploreFlag;
+    return AreaEntry->GetExploreFlag();
 }
 
 uint32 GetAreaIdByLocalizedName(const std::string& name)
 {
     for (uint32 i = 0; i <= sAreaStore.GetNumRows(); i++)
     {
-        if (AreaTableEntry const* AreaEntry = sAreaStore.LookupEntry(i))
+        if (auto AreaEntry = sAreaStore.LookupEntry(i))
         {
             for (uint32 i = 0; i < MAX_LOCALE; ++i)
             {
-                std::string area_name(AreaEntry->area_name[i]);
+                std::string area_name(AreaEntry->GetAreaName(i));
                 if (area_name.size() > 0 && name.find(" - " + area_name) != std::string::npos)
                 {
-                    return AreaEntry->ID;
+                    return AreaEntry->GetID();
                 }
             }
         }
@@ -666,25 +667,26 @@ std::vector<WMOAreaTableEntry const*>& GetWMOAreaTableEntriesByTripple(int32 roo
     return sWMOAreaInfoByTripple[WMOAreaTableTripple(rootid, adtid, groupid)];
 }
 
-AreaTableEntry const* GetAreaEntryByAreaID(uint32 area_id)
+decltype(sAreaStore)::EntryView GetAreaEntryByAreaID(uint32 area_id)
 {
     return sAreaStore.LookupEntry(area_id);
 }
 
-AreaTableEntry const* GetAreaEntryByAreaFlagAndMap(uint32 area_flag, uint32 map_id)
+decltype(sAreaStore)::EntryView GetAreaEntryByAreaFlagAndMap(uint32 area_flag, uint32 map_id)
 {
     // 1.12.1 areatable have duplicates for areaflag
-    AreaTableEntry const* aEntry = nullptr;
+    decltype(sAreaStore)::EntryView aEntry{nullptr};
+
     for (uint32 i = 0; i <= sAreaStore.GetNumRows(); i++)
     {
         if (area_flag != 0)
         {
-            if (AreaTableEntry const* AreaEntry = sAreaStore.LookupEntry(i))
+            if (auto AreaEntry = sAreaStore.LookupEntry(i))
             {
-                if (AreaEntry->exploreFlag == area_flag)
+                if (AreaEntry->GetExploreFlag() == area_flag)
                 {
                     // area_flag found but it lets test map_id too
-                    if (AreaEntry->mapid == map_id)
+                    if (AreaEntry->GetMapID() == map_id)
                         return AreaEntry; // area_flag and map_id are ok so we can return value
                     // not same map_id so we store this entry and continue searching another better one
                     aEntry = AreaEntry;
@@ -699,7 +701,7 @@ AreaTableEntry const* GetAreaEntryByAreaFlagAndMap(uint32 area_flag, uint32 map_
     if (MapEntry const* mapEntry = sMapStore.LookupEntry(map_id))
         return GetAreaEntryByAreaID(mapEntry->linked_zone);
 
-    return nullptr;
+    return decltype(sAreaStore)::EntryView{};
 }
 
 uint32 GetAreaFlagByMapId(uint32 mapid)

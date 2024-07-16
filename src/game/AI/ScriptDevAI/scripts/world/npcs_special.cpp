@@ -776,7 +776,7 @@ bool GossipHello_npc_innkeeper(Player* pPlayer, Creature* pCreature)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TRICK_OR_TREAT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 
     // Should only apply to innkeeper close to start areas.
-    if (AreaTableEntry const* pAreaEntry = GetAreaEntryByAreaID(pCreature->GetAreaId()))
+    if (auto pAreaEntry = GetAreaEntryByAreaID(pCreature->GetAreaId()))
     {
         // Note: this area flag doesn't exist in 1.12.1. The behavior of this gossip require additional research
         //if (pAreaEntry->flags & AREA_FLAG_LOWLEVEL)

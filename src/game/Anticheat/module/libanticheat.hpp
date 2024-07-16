@@ -94,7 +94,7 @@ class SessionAnticheat final : public SessionAnticheatInterface
         virtual bool SpeedChangeAck(MovementInfo &mi, const WorldPacket &packet, float newSpeed) override;
         virtual bool IsInKnockBack() const override;
         virtual void KnockBack(float speedxy, float speedz, float cos, float sin) override;
-        virtual void OnExplore(const AreaTableEntry *p) override;
+        virtual void OnExplore(entry::view::AreaView view) override;
         virtual void Teleport(const Position &pos) override;
 
         virtual void OrderSent(uint16 opcode, uint32 counter) override;

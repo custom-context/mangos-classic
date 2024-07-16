@@ -887,12 +887,12 @@ bool Movement::GetMaxAllowedDist(MovementInfo const& mi, uint32 diffMs, float &d
     return true;
 }
 
-void Movement::OnExplore(AreaTableEntry const* p)
+void Movement::OnExplore(entry::view::AreaView view)
 {
     if (sAnticheatConfig.IsEnabled(CHEAT_TYPE_EXPLORE))
         _anticheat->RecordCheatInternal(CHEAT_TYPE_EXPLORE);
 
-    if (sAnticheatConfig.IsEnabled(CHEAT_TYPE_EXPLORE_HIGH_LEVEL) && static_cast<int32>(_me->GetLevel() + 10) < p->area_level)
+    if (sAnticheatConfig.IsEnabled(CHEAT_TYPE_EXPLORE_HIGH_LEVEL) && static_cast<int32>(_me->GetLevel() + 10) < view->GetAreaLevel())
         _anticheat->RecordCheatInternal(CHEAT_TYPE_EXPLORE_HIGH_LEVEL);
 }
 
@@ -997,17 +997,17 @@ bool Movement::CheckTeleport(uint16 opcode, MovementInfo& movementInfo)
                 movementInfo.pos.z);
 
             // get zone and area info
-            MapEntry const* mapEntry = sMapStore.LookupEntry(mover->GetMapId());
+            auto mapEntry = sMapStore.LookupEntry(mover->GetMapId());
             auto const srcZoneEntry = GetAreaEntryByAreaID(mover->GetZoneId());
             auto const srcAreaEntry = GetAreaEntryByAreaID(mover->GetAreaId());
             auto const destZoneEntry = GetAreaEntryByAreaID(destZoneId);
             auto const destAreaEntry = GetAreaEntryByAreaID(destAreaId);
 
-            const char *mapName = mapEntry ? reinterpret_cast<const char *>(mapEntry->name) : "<unknown>";
-            const char *srcZoneName = srcZoneEntry ? reinterpret_cast<const char *>(srcZoneEntry->area_name) : "<unknown>";
-            const char *srcAreaName = srcAreaEntry ? reinterpret_cast<const char *>(srcAreaEntry->area_name) : "<unknown>";
-            const char *destZoneName = destZoneEntry ? reinterpret_cast<const char *>(destZoneEntry->area_name) : "<unknown>";
-            const char *destAreaName = destAreaEntry ? reinterpret_cast<const char *>(destAreaEntry->area_name) : "<unknown>";
+            const char *mapName = mapEntry ? mapEntry->name[0u] : "<unknown>";
+            const char *srcZoneName = srcZoneEntry ? srcZoneEntry->GetDefaultAreaName() : "<unknown>";
+            const char *srcAreaName = srcAreaEntry ? srcAreaEntry->GetDefaultAreaName() : "<unknown>";
+            const char *destZoneName = destZoneEntry ? destZoneEntry->GetDefaultAreaName() : "<unknown>";
+            const char *destAreaName = destAreaEntry ? destAreaEntry->GetDefaultAreaName() : "<unknown>";
             
             auto const cheatType = distance > 150.f ? CHEAT_TYPE_TELEPORT_FAR : CHEAT_TYPE_TELEPORT;
 

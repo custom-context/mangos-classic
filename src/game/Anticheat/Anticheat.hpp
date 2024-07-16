@@ -6,6 +6,7 @@
 #define __ANTICHEAT_HPP_
 
 #include "Server/WorldPacket.h"
+#include "Server/EntryView.h"
 #include "Auth/BigNumber.h"
 #include "Server/Opcodes.h"
 #include "Chat/Chat.h"
@@ -56,7 +57,6 @@ enum NormalizeFlags
 
 class WorldSession;
 class Player;
-struct AreaTableEntry;
 
 // interface to anticheat session (one for each world session)
 class SessionAnticheatInterface
@@ -91,7 +91,7 @@ class SessionAnticheatInterface
         virtual bool SpeedChangeAck(MovementInfo &mi, const WorldPacket &packet, float newSpeed) = 0;
         virtual bool IsInKnockBack() const = 0;
         virtual void KnockBack(float speedxy, float speedz, float cos, float sin) = 0;
-        virtual void OnExplore(const AreaTableEntry *p) = 0;
+        virtual void OnExplore(entry::view::AreaView view) = 0;
         virtual void Teleport(const Position &pos) = 0;
 
         virtual void OrderSent(uint16 opcode, uint32 counter) = 0;
@@ -274,7 +274,7 @@ class NullSessionAnticheat : public SessionAnticheatInterface
         virtual bool SpeedChangeAck(MovementInfo &, const WorldPacket &, float) override { return true; }
         virtual bool IsInKnockBack() const override { return _inKnockBack; }
         virtual void KnockBack(float speedxy, float speedz, float cos, float sin) override { _inKnockBack = true; }
-        virtual void OnExplore(const AreaTableEntry *) override {}
+        virtual void OnExplore(entry::view::AreaView view) override {}
         virtual void Teleport(const Position &) override {}
 
         virtual void OrderSent(uint16, uint32) override {}

@@ -222,8 +222,8 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
             continue;
 
         std::string aname;
-        if (AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(pzoneid))
-            aname = areaEntry->area_name[GetSessionDbcLocale()];
+        if (auto areaEntry = GetAreaEntryByAreaID(pzoneid))
+            aname = areaEntry->GetAreaName(GetSessionDbcLocale());
 
         bool s_show = true;
         for (uint32 i = 0; i < str_count; ++i)

@@ -11,6 +11,7 @@
 #include "Policies/Singleton.h"
 #include "World/World.h"
 #include "Entities/Player.h"
+#include "Server/EntryView.h"
 #include "Server/WorldSession.h"
 #include "Accounts/AccountMgr.h"
 #include "Globals/ObjectAccessor.h"
@@ -985,10 +986,10 @@ void SessionAnticheat::KnockBack(float speedxy, float speedz, float cos, float s
         _movementData->KnockBack(speedxy, speedz, cos, sin);
 }
 
-void SessionAnticheat::OnExplore(const AreaTableEntry *p)
+void SessionAnticheat::OnExplore(entry::view::AreaView view)
 {
     if (_movementData)
-        _movementData->OnExplore(p);
+        _movementData->OnExplore(view);
 }
 
 void SessionAnticheat::Teleport(const Position &pos)

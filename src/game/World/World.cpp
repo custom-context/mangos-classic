@@ -2662,7 +2662,7 @@ void World::LoadGraveyardZones()
             continue;
         }
 
-        if (linkKind == GRAVEYARD_AREALINK && GetAreaEntryByAreaID(locId) == nullptr)
+        if (linkKind == GRAVEYARD_AREALINK && !GetAreaEntryByAreaID(locId))
         {
             sLog.outErrorDb("Table `game_graveyard_zone` has record for nonexistent area id (%u), skipped.", locId);
             continue;

@@ -302,8 +302,8 @@ bool ChatHandler::HandleGPSCommand(char* args)
     obj->GetZoneAndAreaId(zone_id, area_id);
 
     MapEntry const* mapEntry = sMapStore.LookupEntry(obj->GetMapId());
-    AreaTableEntry const* zoneEntry = GetAreaEntryByAreaID(zone_id);
-    AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(area_id);
+    auto zoneEntry = GetAreaEntryByAreaID(zone_id);
+    auto areaEntry = GetAreaEntryByAreaID(area_id);
 
     float zone_x = obj->GetPositionX();
     float zone_y = obj->GetPositionY();
@@ -344,7 +344,7 @@ bool ChatHandler::HandleGPSCommand(char* args)
 
     PSendSysMessage(LANG_MAP_POSITION,
                     obj->GetMapId(), (mapEntry ? mapEntry->name[GetSessionDbcLocale()] : "<unknown>"),
-                    zone_id, (zoneEntry ? zoneEntry->area_name[GetSessionDbcLocale()] : "<unknown>"),
+                    zone_id, (zoneEntry ? zoneEntry->GetAreaName(GetSessionDbcLocale()) : "<unknown>"),
                     area_id, nameInfo.areaName, wmoAreaOverride.c_str(),
                     obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(),
                     cell.GridX(), cell.GridY(), cell.CellX(), cell.CellY(), obj->GetInstanceId(),
@@ -367,7 +367,7 @@ bool ChatHandler::HandleGPSCommand(char* args)
         wmoAreaOverride = "WMOArea Override: " + std::string(nameInfo.wmoNameOverride);
     DEBUG_LOG(GetMangosString(LANG_MAP_POSITION),
               obj->GetMapId(), (mapEntry ? mapEntry->name[sWorld.GetDefaultDbcLocale()] : "<unknown>"),
-              zone_id, (zoneEntry ? zoneEntry->area_name[sWorld.GetDefaultDbcLocale()] : "<unknown>"),
+              zone_id, (zoneEntry ? zoneEntry->GetAreaName(sWorld.GetDefaultDbcLocale()) : "<unknown>"),
               area_id, nameInfo.areaName, wmoAreaOverride.c_str(),
               obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(),
               cell.GridX(), cell.GridY(), cell.CellX(), cell.CellY(), obj->GetInstanceId(),
@@ -1277,11 +1277,11 @@ bool ChatHandler::HandleLookupAreaCommand(char* args)
     // Search in AreaTable.dbc
     for (uint32 areaid = 0; areaid <= sAreaStore.GetNumRows(); ++areaid)
     {
-        AreaTableEntry const* areaEntry = sAreaStore.LookupEntry(areaid);
+        auto areaEntry = sAreaStore.LookupEntry(areaid);
         if (areaEntry)
         {
             int loc = GetSessionDbcLocale();
-            std::string name = areaEntry->area_name[loc];
+            std::string name = areaEntry->GetAreaName(loc);
             if (name.empty())
                 continue;
 
@@ -1293,7 +1293,7 @@ bool ChatHandler::HandleLookupAreaCommand(char* args)
                     if (loc == GetSessionDbcLocale())
                         continue;
 
-                    name = areaEntry->area_name[loc];
+                    name = areaEntry->GetAreaName(loc);
                     if (name.empty())
                         continue;
 
@@ -1307,9 +1307,9 @@ bool ChatHandler::HandleLookupAreaCommand(char* args)
                 // send area in "id - [name]" format
                 std::ostringstream ss;
                 if (m_session)
-                    ss << areaEntry->ID << " - |cffffffff|Harea:" << areaEntry->ID << "|h[" << name << " " << localeNames[loc] << "]|h|r";
+                    ss << areaEntry->GetID() << " - |cffffffff|Harea:" << areaEntry->GetID() << "|h[" << name << " " << localeNames[loc] << "]|h|r";
                 else
-                    ss << areaEntry->ID << " - " << name << " " << localeNames[loc];
+                    ss << areaEntry->GetID() << " - " << name << " " << localeNames[loc];
 
                 SendSysMessage(ss.str().c_str());
 
@@ -1835,7 +1835,7 @@ bool ChatHandler::HandleGoZoneXYCommand(char* args)
     else
         areaid = _player->GetZoneId();
 
-    AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(areaid);
+    auto areaEntry = GetAreaEntryByAreaID(areaid);
 
     if (x < 0 || x > 100 || y < 0 || y > 100 || !areaEntry)
     {
@@ -1845,21 +1845,21 @@ bool ChatHandler::HandleGoZoneXYCommand(char* args)
     }
 
     // update to parent zone if exist (client map show only zones without parents)
-    AreaTableEntry const* zoneEntry = areaEntry->zone ? GetAreaEntryByAreaID(areaEntry->zone) : areaEntry;
+    auto zoneEntry = areaEntry->GetZone() ? GetAreaEntryByAreaID(areaEntry->GetZone()) : areaEntry;
 
-    MapEntry const* mapEntry = sMapStore.LookupEntry(zoneEntry->mapid);
+    MapEntry const* mapEntry = sMapStore.LookupEntry(zoneEntry->GetMapID());
 
     if (mapEntry->Instanceable())
     {
-        PSendSysMessage(LANG_INVALID_ZONE_MAP, areaEntry->ID, areaEntry->area_name[GetSessionDbcLocale()],
+        PSendSysMessage(LANG_INVALID_ZONE_MAP, areaEntry->GetMapID(), areaEntry->GetAreaName(GetSessionDbcLocale()),
                         mapEntry->MapID, mapEntry->name[GetSessionDbcLocale()]);
         SetSentErrorMessage(true);
         return false;
     }
 
-    if (!Zone2MapCoordinates(x, y, zoneEntry->ID))
+    if (!Zone2MapCoordinates(x, y, zoneEntry->GetID()))
     {
-        PSendSysMessage(LANG_INVALID_ZONE_MAP, areaEntry->ID, areaEntry->area_name[GetSessionDbcLocale()],
+        PSendSysMessage(LANG_INVALID_ZONE_MAP, areaEntry->GetID(), areaEntry->GetAreaName(GetSessionDbcLocale()),
                         mapEntry->MapID, mapEntry->name[GetSessionDbcLocale()]);
         SetSentErrorMessage(true);
         return false;

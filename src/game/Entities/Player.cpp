@@ -4698,7 +4698,7 @@ void Player::RepopAtGraveyard()
     // note: this can be called also when the player is alive
     // for example from WorldSession::HandleMovementOpcodes
 
-    AreaTableEntry const* zone = GetAreaEntryByAreaID(GetAreaId());
+    auto zone = GetAreaEntryByAreaID(GetAreaId());
 
     WorldSafeLocsEntry const* ClosestGrave;
     ClosestGrave = GetMap()->GetGraveyardManager().GetClosestGraveYard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), GetTeam());
@@ -4745,7 +4745,7 @@ void Player::UpdateLocalChannels(uint32 newZone)
     if (m_channels.empty())
         return;
 
-    AreaTableEntry const* current_zone = GetAreaEntryByAreaID(newZone);
+    auto current_zone = GetAreaEntryByAreaID(newZone);
     if (!current_zone)
         return;
 
@@ -4753,7 +4753,7 @@ void Player::UpdateLocalChannels(uint32 newZone)
     if (!cMgr)
         return;
 
-    std::string current_zone_name = current_zone->area_name[GetSession()->GetSessionDbcLocale()];
+    std::string current_zone_name = current_zone->GetAreaName(GetSession()->GetSessionDbcLocale());
 
     for (JoinedChannelsList::iterator i = m_channels.begin(), next; i != m_channels.end(); i = next)
     {
@@ -6165,23 +6165,23 @@ void Player::CheckAreaExploreAndOutdoor()
     {
         SetUInt32Value(PLAYER_EXPLORED_ZONES_1 + offset, (uint32)(currFields | val));
 
-        AreaTableEntry const* p = GetAreaEntryByAreaFlagAndMap(areaFlag, GetMapId());
+        auto p = GetAreaEntryByAreaFlagAndMap(areaFlag, GetMapId());
         if (!p)
         {
             sLog.outError("PLAYER: Player %u discovered unknown area (x: %f y: %f map: %u", GetGUIDLow(), GetPositionX(), GetPositionY(), GetMapId());
         }
-        else if (p->area_level > 0)
+        else if (p->GetAreaLevel() > 0)
         {
             GetSession()->GetAnticheat()->OnExplore(p);
 
-            uint32 area = p->ID;
+            uint32 area = p->GetID();
             if (GetLevel() >= sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
             {
                 SendExplorationExperience(area, 0);
             }
             else
             {
-                int32 diff = int32(GetLevel()) - p->area_level;
+                int32 diff = int32(GetLevel()) - p->GetAreaLevel();
                 uint32 XP = 0;
                 if (diff < -5)
                 {
@@ -6195,11 +6195,11 @@ void Player::CheckAreaExploreAndOutdoor()
                     else if (exploration_percent < 0)
                         exploration_percent = 0;
 
-                    XP = uint32(sObjectMgr.GetBaseXP(p->area_level) * exploration_percent / 100 * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE));
+                    XP = uint32(sObjectMgr.GetBaseXP(p->GetAreaLevel()) * exploration_percent / 100 * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE));
                 }
                 else
                 {
-                    XP = uint32(sObjectMgr.GetBaseXP(p->area_level) * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE));
+                    XP = uint32(sObjectMgr.GetBaseXP(p->GetAreaLevel()) * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE));
                 }
 
                 GiveXP(XP, nullptr);
@@ -6740,11 +6740,11 @@ void Player::UpdateArea(uint32 newArea)
 {
     m_areaUpdateId    = newArea;
 
-    AreaTableEntry const* area = GetAreaEntryByAreaID(newArea);
+    auto area = GetAreaEntryByAreaID(newArea);
 
     // FFA_PVP flags are area and not zone id dependent
     // so apply them accordingly
-    if (area && (area->flags & AREA_FLAG_ARENA))
+    if (area && (area->GetFlags() & AREA_FLAG_ARENA))
     {
         if (!IsGameMaster())
             SetPvPFreeForAll(true);
@@ -6773,7 +6773,7 @@ bool Player::CanUseCapturePoint() const
 
 void Player::UpdateZone(uint32 newZone, uint32 newArea, bool force)
 {
-    AreaTableEntry const* zone = GetAreaEntryByAreaID(newZone);
+    auto zone = GetAreaEntryByAreaID(newZone);
     if (!zone)
         return;
 
@@ -6802,13 +6802,13 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea, bool force)
 
     // in PvP, any not controlled zone (except zone->team == 6, default case)
     // in PvE, only opposition team capital
-    switch (zone->team)
+    switch (zone->GetTeam())
     {
         case AREATEAM_ALLY:
-            pvpInfo.inPvPEnforcedArea = GetTeam() != ALLIANCE && (sWorld.IsPvPRealm() || zone->flags & AREA_FLAG_CAPITAL);
+            pvpInfo.inPvPEnforcedArea = GetTeam() != ALLIANCE && (sWorld.IsPvPRealm() || zone->GetFlags() & AREA_FLAG_CAPITAL);
             break;
         case AREATEAM_HORDE:
-            pvpInfo.inPvPEnforcedArea = GetTeam() != HORDE && (sWorld.IsPvPRealm() || zone->flags & AREA_FLAG_CAPITAL);
+            pvpInfo.inPvPEnforcedArea = GetTeam() != HORDE && (sWorld.IsPvPRealm() || zone->GetFlags() & AREA_FLAG_CAPITAL);
             break;
         case AREATEAM_NONE:
             // overwrite for battlegrounds, maybe batter some zone flags but current known not 100% fit to this
@@ -6822,7 +6822,7 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea, bool force)
     if (pvpInfo.inPvPEnforcedArea)                              // in hostile area
         UpdatePvP(true);
 
-    if (zone->flags & AREA_FLAG_CAPITAL)                    // in capital city
+    if (zone->GetFlags() & AREA_FLAG_CAPITAL)                    // in capital city
         SetRestType(REST_TYPE_IN_CITY);
     else if (HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) && GetRestType() != REST_TYPE_IN_TAVERN)
         // resting and not in tavern (leave city then); tavern leave handled in CheckAreaExploreAndOutdoor

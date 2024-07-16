@@ -10,6 +10,7 @@
 
 #include "Common.h"
 #include "Entities/Unit.h"
+#include "Server/EntryView.h"
 #include "../libanticheat.hpp"
 #include "../cyclic.hpp"
 
@@ -21,7 +22,6 @@ class ChatHandler;
 class Player;
 class WorldSession;
 class WorldPacket;
-struct AreaTableEntry;
 
 namespace NamreebAnticheat
 {
@@ -135,7 +135,7 @@ class Movement
 
         bool ExtrapolateMovement(MovementInfo const& mi, uint32 diffMs, Position &pos) const;
         bool GetMaxAllowedDist(MovementInfo const& mi, uint32 diffMs, float &dxy, float &dz) const;
-        void OnExplore(AreaTableEntry const* p);
+        void OnExplore(entry::view::AreaView view);
         void OnTransport(Player* plMover, ObjectGuid transportGuid);
 
         bool CheckTeleport(uint16 opcode, MovementInfo& movementInfo);
