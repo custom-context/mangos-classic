@@ -591,22 +591,6 @@ public:
 
     template<size_t N>
     auto GetAttributesExtensions() const noexcept;
-
-    template<> auto GetAttributesExtensions<1>() const noexcept {
-        return GetRaw()->AttributesEx;
-    }
-
-    template<> auto GetAttributesExtensions<2>() const noexcept {
-        return GetRaw()->AttributesEx2;
-    }
-
-    template<> auto GetAttributesExtensions<3>() const noexcept {
-        return GetRaw()->AttributesEx3;
-    }
-
-    template<> auto GetAttributesExtensions<4>() const noexcept {
-        return GetRaw()->AttributesEx4;
-    }
     
     auto GetStances() const noexcept {
         return GetRaw()->Stances;
@@ -958,6 +942,14 @@ public:
     auto GetAllEffectsMechanicMask() const { return GetRaw()->GetAllEffectsMechanicMask(); }
     auto GetSchoolMask() const { return GetRaw()->GetSchoolMask(); }
 };
+
+template<> auto SpellView::GetAttributesExtensions<1>() const noexcept;
+
+template<> auto SpellView::GetAttributesExtensions<2>() const noexcept;
+
+template<> auto SpellView::GetAttributesExtensions<3>() const noexcept;
+
+template<> auto SpellView::GetAttributesExtensions<4>() const noexcept;
 
 class TaxiNodeView: public BaseEntryView<TaxiNodesEntry, TaxiNodeView>
 {
