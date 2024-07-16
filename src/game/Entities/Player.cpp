@@ -4759,15 +4759,15 @@ void Player::UpdateLocalChannels(uint32 newZone)
     {
         next = i; ++next;
 
-        ChatChannelsEntry const* ch = (*i)->GetChannelEntry();
+        auto ch = (*i)->GetChannelEntry();
 
         // skip non built-in channels or global channel without zone name in pattern
-        if (!ch || (ch->flags & 4) == 4)
+        if (!ch || (ch->GetFlags() & 4) == 4)
             continue;
 
         //  new channel
         char new_channel_name_buf[100];
-        snprintf(new_channel_name_buf, 100, ch->pattern[m_session->GetSessionDbcLocale()], current_zone_name.c_str());
+        snprintf(new_channel_name_buf, 100, ch->GetPattern(m_session->GetSessionDbcLocale()), current_zone_name.c_str());
         Channel* new_channel = cMgr->GetJoinChannel(new_channel_name_buf);
 
         if ((*i) != new_channel)

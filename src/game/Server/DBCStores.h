@@ -45,7 +45,7 @@ std::vector<WMOAreaTableEntry const*>& GetWMOAreaTableEntriesByTripple(int32 roo
 
 uint32 GetVirtualMapForMapAndZone(uint32 mapid, uint32 zoneId);
 
-ChatChannelsEntry const* GetChatChannelsEntryFor(const std::string& name, uint32 channel_id = 0);
+entry::view::ChatChannelView GetChatChannelsEntryFor(const std::string& name, uint32 channel_id = 0);
 
 CharacterFacialHairStylesEntry const* GetCharFacialHairEntry(uint8 race, uint8 gender, uint8 facialHairId);
 CharSectionsEntry const* GetCharSectionEntry(uint8 race, CharSectionType genType, uint8 gender, uint8 type, uint8 color);
@@ -76,12 +76,12 @@ extern DBCStorage <AreaTriggerEntry>             sAreaTriggerStore;
 extern DBCStorage <AuctionHouseEntry>            sAuctionHouseStore;
 extern DBCStorage <BankBagSlotPricesEntry>       sBankBagSlotPricesStore;
 #ifdef ENABLE_PLAYERBOTS
-extern DBCStorage <ChatChannelsEntry>            sChatChannelsStore; //has function for access aswell
+extern DBCStorage <ChatChannelsEntry, entry::view::ChatChannelView>            sChatChannelsStore; //has function for access aswell
 #else
 // extern DBCStorage <ChatChannelsEntry>            sChatChannelsStore; //has function for access aswell, no usable index
 #endif
 extern DBCStorage <CharStartOutfitEntry>         sCharStartOutfitStore;
-extern DBCStorage <ChatChannelsEntry>            sChatChannelsStore;
+extern DBCStorage <ChatChannelsEntry, entry::view::ChatChannelView> sChatChannelsStore;
 extern DBCStorage <CharacterFacialHairStylesEntry>  sCharacterFacialHairStylesStore;
 extern DBCStorage <CharSectionsEntry>            sCharSectionsStore;
 extern DBCStorage <ChrClassesEntry>              sChrClassesStore;

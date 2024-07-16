@@ -62,7 +62,7 @@ DBCStorage <AreaTriggerEntry> sAreaTriggerStore(AreaTriggerEntryfmt);
 DBCStorage <AuctionHouseEntry> sAuctionHouseStore(AuctionHouseEntryfmt);
 DBCStorage <BankBagSlotPricesEntry> sBankBagSlotPricesStore(BankBagSlotPricesEntryfmt);
 DBCStorage <CharStartOutfitEntry> sCharStartOutfitStore(CharStartOutfitEntryfmt);
-DBCStorage <ChatChannelsEntry> sChatChannelsStore(ChatChannelsEntryfmt);
+DBCStorage <ChatChannelsEntry, entry::view::ChatChannelView> sChatChannelsStore(ChatChannelsEntryfmt);
 DBCStorage <CharacterFacialHairStylesEntry> sCharacterFacialHairStylesStore(CharacterFacialHairStylesfmt);
 std::unordered_map<uint32, CharacterFacialHairStylesEntry const*> sCharFacialHairMap;
 DBCStorage <CharSectionsEntry> sCharSectionsStore(CharSectionsEntryfmt);
@@ -733,19 +733,19 @@ CharSectionsEntry const* GetCharSectionEntry(uint8 race, CharSectionType genType
     return nullptr;
 }
 
-ChatChannelsEntry const* GetChatChannelsEntryFor(const std::string& name, uint32 channel_id/* = 0*/)
+entry::view::ChatChannelView GetChatChannelsEntryFor(const std::string& name, uint32 channel_id/* = 0*/)
 {
     std::wstring wname;
 
     Utf8toWStr(name, wname);
 
     if (!channel_id && wname.empty())
-        return nullptr;
+        return {};
 
     // not sorted, numbering index from 0
     for (uint32 i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
     {
-        if (ChatChannelsEntry const* entry = sChatChannelsStore.LookupEntry(i))
+        if (auto entry = sChatChannelsStore.LookupEntry(i))
         {
             std::wstring wpattern;
 
@@ -754,7 +754,7 @@ ChatChannelsEntry const* GetChatChannelsEntryFor(const std::string& name, uint32
             {
                 for (uint32 i = 0; i < MAX_LOCALE; ++i)
                 {
-                    Utf8toWStr(entry->pattern[i], wpattern);
+                    Utf8toWStr(entry->GetPattern(i), wpattern);
 
                     if (wpattern.empty())
                         continue;
@@ -776,11 +776,11 @@ ChatChannelsEntry const* GetChatChannelsEntryFor(const std::string& name, uint32
             }
 
             // name still not found, but channel id is provided: possibly no dbc data for client locale
-            if (channel_id && channel_id == entry->ChannelID)
+            if (channel_id && channel_id == entry->GetChannelID())
                 return entry;
         }
     }
-    return nullptr;
+    return {};
 }
 
 /*[-ZERO]

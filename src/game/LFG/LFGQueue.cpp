@@ -505,14 +505,14 @@ void LFGQueue::LoadMeetingStones()
         auto data = sGOStorage.LookupEntry<GameObjectInfo>(i);
         if (data && data->type == GAMEOBJECT_TYPE_MEETINGSTONE)
         {
-            AreaTableEntry const* area = GetAreaEntryByAreaID(data->meetingstone.areaID);
+            auto area = GetAreaEntryByAreaID(data->meetingstone.areaID);
             if (area)
             {
                 MeetingStoneInfo info;
                 info.area = data->meetingstone.areaID;
                 info.minlevel = data->meetingstone.minLevel;
                 info.maxlevel = data->meetingstone.maxLevel;
-                info.name = area->area_name[0];
+                info.name = area->GetAreaName(0);
                 // get stone position
                 Position stonePosition = Position();
                 uint32 mapId = 0;
@@ -536,7 +536,7 @@ void LFGQueue::LoadMeetingStones()
                 default:
                     info.dungeonType = MAP_INSTANCE;
                 }
-                /*if (MapEntry const* mEntry = sMapStore.LookupEntry(area->mapid))
+                /*if (MapEntry const* mEntry = sMapStore.LookupEntry(area->GetMapID()))
                 {
                     info.dungeonType = mEntry->map_type;
                 }

@@ -26,19 +26,19 @@
 Channel::Channel(const std::string& name, uint32 channel_id/* = 0*/)
     : m_name(name)
 {
-    if (ChatChannelsEntry const* builtin = GetChatChannelsEntryFor(name, channel_id))
+    if (auto builtin = GetChatChannelsEntryFor(name, channel_id))
     {
         m_entry = builtin;                                              // built-in channel entry
         m_announcements = false;                                        // no join/leave announcements by default
         m_flags = CHANNEL_FLAG_GENERAL;                                 // default for all built-in channels
 
-        if (builtin->flags & CHANNEL_DBC_FLAG_TRADE)                    // for trade channel
+        if (builtin->GetFlags() & CHANNEL_DBC_FLAG_TRADE)                    // for trade channel
             m_flags |= CHANNEL_FLAG_TRADE;
 
-        if (builtin->flags & CHANNEL_DBC_FLAG_CITY_ONLY2)               // for city only channels
+        if (builtin->GetFlags() & CHANNEL_DBC_FLAG_CITY_ONLY2)               // for city only channels
             m_flags |= CHANNEL_FLAG_CITY;
 
-        if (builtin->flags & CHANNEL_DBC_FLAG_LFG)                      // for LFG channel
+        if (builtin->GetFlags() & CHANNEL_DBC_FLAG_LFG)                      // for LFG channel
             m_flags |= CHANNEL_FLAG_LFG;
         else                                                            // for all other channels
             m_flags |= CHANNEL_FLAG_NOT_LFG;
