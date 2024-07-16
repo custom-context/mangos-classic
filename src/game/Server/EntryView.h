@@ -71,10 +71,10 @@ public:
     }
 
     auto GetAreaName(size_t idx) const noexcept {
-        if (idx > GetAreaNamesSize()) {
-            return GetDefaultAreaName();
+        if (idx < GetAreaNamesSize()) {
+            return GetRaw()->area_name[idx];
         }
-        return GetRaw()->area_name[idx];
+        return GetDefaultAreaName();
     }
 
     auto GetTeam() const noexcept {
@@ -108,10 +108,10 @@ public:
     }
 
     auto GetPattern(size_t idx) const noexcept {
-        if (idx > GetPatternsSize()) {
-            return GetDefaultPattern();
+        if (idx < GetPatternsSize()) {
+            return GetRaw()->pattern[idx];
         }
-        return GetRaw()->pattern[idx];
+        return GetDefaultPattern();
     }
 };
 
@@ -137,10 +137,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->name[idx];
         }
-        return GetRaw()->name[idx];
+        return GetDefaultName();
     }
 
     auto GetSpellFamily() const noexcept {
@@ -190,10 +190,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->name[idx];
         }
-        return GetRaw()->name[idx];
+        return GetDefaultName();
     }
 };
 
@@ -239,10 +239,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->Name[idx];
         }
-        return GetRaw()->Name[idx];
+        return GetDefaultName();
     }
 };
 
@@ -284,10 +284,10 @@ public:
     }
 
     auto GetEncounterName(size_t idx) const noexcept {
-        if (idx > GetEncounterNamesSize()) {
-            return GetDefaultEncounterName();
+        if (idx < GetEncounterNamesSize()) {
+            return GetRaw()->encounterName[idx];
         }
-        return GetRaw()->encounterName[idx];
+        return GetDefaultEncounterName();
     }
 
     auto GetNameLangFlags() const noexcept {
@@ -341,10 +341,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->name[idx];
         }
-        return GetRaw()->name[idx];
+        return GetDefaultName();
     }
 
     auto GetIndexFitTo(uint32 raceMask, uint32 classMask) const {
@@ -374,10 +374,10 @@ public:
     }
 
     auto GetQuestion(size_t idx) const noexcept {
-        if (idx > GetQuestionsSize()) {
-            return GetDefaultQuestion();
+        if (idx < GetQuestionsSize()) {
+            return GetRaw()->question[idx];
         }
-        return GetRaw()->question[idx];
+        return GetDefaultQuestion();
     }
 };
 
@@ -399,10 +399,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->name[idx];
         }
-        return GetRaw()->name[idx];
+        return GetDefaultName();
     }
 };
 
@@ -424,10 +424,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->name[idx];
         }
-        return GetRaw()->name[idx];
+        return GetDefaultName();
     }
 };
 
@@ -445,10 +445,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->name[idx];
         }
-        return GetRaw()->name[idx];
+        return GetDefaultName();
     }
 
     constexpr static auto GetSpellIDsSize() noexcept {
@@ -500,10 +500,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->name[idx];
         }
-        return GetRaw()->name[idx];
+        return GetDefaultName();
     }
 
     auto GetLinkedZoneID() const noexcept {
@@ -545,10 +545,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->name[idx];
         }
-        return GetRaw()->name[idx];
+        return GetDefaultName();
     }
 
     auto GetSpellIcon() const noexcept {
@@ -831,10 +831,10 @@ public:
     }
 
     auto GetSpellName(size_t idx) const noexcept {
-        if (idx > GetSpellNamesSize()) {
-            return GetDefaultSpellName();
+        if (idx < GetSpellNamesSize()) {
+            return GetRaw()->SpellName[idx];
         }
-        return GetRaw()->SpellName[idx];
+        return GetDefaultSpellName();
     }
     
     constexpr static auto GetRanksSize() noexcept {
@@ -977,10 +977,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->name[idx];
         }
-        return GetRaw()->name[idx];
+        return GetDefaultName();
     }
 
     auto GetMountCreatureID() const noexcept {
@@ -1026,10 +1026,10 @@ public:
     }
 
     auto GetName(size_t idx) const noexcept {
-        if (idx > GetNamesSize()) {
-            return GetDefaultName();
+        if (idx < GetNamesSize()) {
+            return GetRaw()->Name[idx];
         }
-        return GetRaw()->Name[idx];
+        return GetDefaultName();
     }
 };
 
