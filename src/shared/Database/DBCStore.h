@@ -21,15 +21,31 @@
 
 #include "DBCFileLoader.h"
 
-template<class T>
+#include <memory>
+#include <type_traits>
+
+template<class InnerType, class OuterType = InnerType const*>
 class DBCStorage
 {
         typedef std::list<char*> StringPoolList;
     public:
+        using EntryView = OuterType;
+
         explicit DBCStorage(const char* f) : nCount(0), fieldCount(0), fmt(f), indexTable(nullptr), m_dataTable(nullptr) { }
         ~DBCStorage() { Clear(); }
 
-        T const* LookupEntry(uint32 id) const { return (id >= nCount) ? nullptr : indexTable[id]; }
+        EntryView LookupEntry(uint32 id) const
+        {
+            if (id >= nCount)
+                return {};
+
+            if constexpr (std::is_same_v<EntryView, InnerType const*>) {
+                return indexTable[id];
+            } else {
+                static_assert(std::is_constructible_v<EntryView, const InnerType*>, "Entry view type must be constructible from Inner type pointer");
+                return EntryView{indexTable[id]};
+            }
+        }
         uint32  GetNumRows() const { return nCount; }
         char const* GetFormat() const { return fmt; }
         uint32 GetFieldCount() const { return fieldCount; }
@@ -44,7 +60,7 @@ class DBCStorage
             fieldCount = dbc.GetCols();
 
             // load raw non-string data
-            m_dataTable = (T*)dbc.AutoProduceData(fmt, nCount, (char**&)indexTable);
+            m_dataTable = (InnerType*)dbc.AutoProduceData(fmt, nCount, (char**&)indexTable);
 
             // load strings from dbc data
             m_stringPoolList.push_back(dbc.AutoProduceStrings(fmt, (char*)m_dataTable));
@@ -89,14 +105,14 @@ class DBCStorage
         }
 
         void EraseEntry(uint32 id) { assert(id < nCount && "To be erased entry must be in bounds!") ; indexTable[id] = nullptr; }
-        void InsertEntry(T* entry, uint32 id) { assert(id < nCount && "To be inserted entry must be in bounds!"); indexTable[id] = entry; }
+        void InsertEntry(InnerType* entry, uint32 id) { assert(id < nCount && "To be inserted entry must be in bounds!"); indexTable[id] = entry; }
 
     private:
         uint32 nCount;
         uint32 fieldCount;
         char const* fmt;
-        T** indexTable;
-        T* m_dataTable;
+        InnerType** indexTable;
+        InnerType* m_dataTable;
         StringPoolList m_stringPoolList;
 };
 
