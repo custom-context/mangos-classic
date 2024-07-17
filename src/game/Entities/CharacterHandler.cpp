@@ -369,7 +369,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         }
     }
 
-    ChrClassesEntry const* classEntry = sChrClassesStore.LookupEntry(class_);
+    auto classEntry = sChrClassesStore.LookupEntry(class_);
     ChrRacesEntry const* raceEntry = sChrRacesStore.LookupEntry(race_);
 
     if (!classEntry || !raceEntry)

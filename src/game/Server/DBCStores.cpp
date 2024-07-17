@@ -67,7 +67,7 @@ DBCStorage <CharacterFacialHairStylesEntry> sCharacterFacialHairStylesStore(Char
 std::unordered_map<uint32, CharacterFacialHairStylesEntry const*> sCharFacialHairMap;
 DBCStorage <CharSectionsEntry> sCharSectionsStore(CharSectionsEntryfmt);
 std::multimap<uint32, CharSectionsEntry const*> sCharSectionMap;
-DBCStorage <ChrClassesEntry> sChrClassesStore(ChrClassesEntryfmt);
+DBCStorage <ChrClassesEntry, entry::view::CharacterClassView> sChrClassesStore(ChrClassesEntryfmt);
 DBCStorage <ChrRacesEntry> sChrRacesStore(ChrRacesEntryfmt);
 DBCStorage <CinematicCameraEntry> sCinematicCameraStore(CinematicCameraEntryfmt);
 DBCStorage <CinematicSequencesEntry> sCinematicSequencesStore(CinematicSequencesEntryfmt);

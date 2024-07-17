@@ -757,7 +757,7 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
         return false;
     }
 
-    ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(class_);
+    auto cEntry = sChrClassesStore.LookupEntry(class_);
     if (!cEntry)
     {
         sLog.outError("Class %u not found in DBC (Wrong DBC files?)", class_);
@@ -779,7 +779,7 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
 
     SetMap(sMapMgr.CreateMap(info->mapId, this));
 
-    uint8 powertype = cEntry->powerType;
+    uint8 powertype = cEntry->GetPowerType();
 
     setFactionForRace(race);
 
@@ -17381,9 +17381,9 @@ void Player::InitDataForForm(bool reapplyMods)
         {
             SetRegularAttackTime();
 
-            ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(getClass());
-            if (cEntry && cEntry->powerType < MAX_POWERS && uint32(GetPowerType()) != cEntry->powerType)
-                SetPowerType(Powers(cEntry->powerType));
+            auto cEntry = sChrClassesStore.LookupEntry(getClass());
+            if (cEntry && cEntry->GetPowerType() < MAX_POWERS && uint32(GetPowerType()) != cEntry->GetPowerType())
+                SetPowerType(Powers(cEntry->GetPowerType()));
 
             break;
         }
@@ -19236,11 +19236,11 @@ void Player::learnSpellHighRank(uint32 spellid)
 #ifdef ENABLE_PLAYERBOTS
 void Player::learnClassLevelSpells(bool includeHighLevelQuestRewards)
 {
-    ChrClassesEntry const* clsEntry = sChrClassesStore.LookupEntry(getClass());
+    auto clsEntry = sChrClassesStore.LookupEntry(getClass());
     if (!clsEntry)
         return;
 
-    uint32 family = clsEntry->spellfamily;
+    uint32 family = clsEntry->GetSpellFamily();
 
     // special cases which aren't sourced from trainers and normally require quests to obtain - added here for convenience
     ObjectMgr::QuestMap const& qTemplates = sObjectMgr.GetQuestTemplates();

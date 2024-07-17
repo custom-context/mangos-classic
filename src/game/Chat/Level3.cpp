@@ -1433,10 +1433,10 @@ bool ChatHandler::HandleLearnAllMyClassCommand(char* /*args*/)
 bool ChatHandler::HandleLearnAllMySpellsCommand(char* /*args*/)
 {
     Player* player = m_session->GetPlayer();
-    ChrClassesEntry const* clsEntry = sChrClassesStore.LookupEntry(player->getClass());
+    auto clsEntry = sChrClassesStore.LookupEntry(player->getClass());
     if (!clsEntry)
         return true;
-    uint32 family = clsEntry->spellfamily;
+    uint32 family = clsEntry->GetSpellFamily();
 
     for (uint32 i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
     {
@@ -4402,14 +4402,14 @@ bool ChatHandler::HandleResetHonorCommand(char* args)
 
 static bool HandleResetStatsOrLevelHelper(Player* player)
 {
-    ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(player->getClass());
+    auto cEntry = sChrClassesStore.LookupEntry(player->getClass());
     if (!cEntry)
     {
         sLog.outError("Class %u not found in DBC (Wrong DBC files?)", player->getClass());
         return false;
     }
 
-    uint8 powertype = cEntry->powerType;
+    uint8 powertype = cEntry->GetPowerType();
 
     // reset m_form if no aura
     if (!player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
@@ -6223,10 +6223,10 @@ bool ChatHandler::ShowPlayerListHelper(std::unique_ptr<QueryResult> queryResult,
             uint32 level     = fields[4].GetUInt32();
 
             ChrRacesEntry const* raceEntry = sChrRacesStore.LookupEntry(race);
-            ChrClassesEntry const* classEntry = sChrClassesStore.LookupEntry(class_);
+            auto classEntry = sChrClassesStore.LookupEntry(class_);
 
             char const* race_name = raceEntry   ? raceEntry->name[GetSessionDbcLocale()] : "<?>";
-            char const* class_name = classEntry ? classEntry->name[GetSessionDbcLocale()] : "<?>";
+            char const* class_name = classEntry ? classEntry->GetName(GetSessionDbcLocale()) : "<?>";
 
             if (!m_session)
                 PSendSysMessage(LANG_CHARACTERS_LIST_LINE_CONSOLE, guid, name.c_str(), race_name, class_name, level);

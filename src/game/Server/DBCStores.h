@@ -84,7 +84,7 @@ extern DBCStorage <CharStartOutfitEntry>         sCharStartOutfitStore;
 extern DBCStorage <ChatChannelsEntry, entry::view::ChatChannelView> sChatChannelsStore;
 extern DBCStorage <CharacterFacialHairStylesEntry>  sCharacterFacialHairStylesStore;
 extern DBCStorage <CharSectionsEntry>            sCharSectionsStore;
-extern DBCStorage <ChrClassesEntry>              sChrClassesStore;
+extern DBCStorage <ChrClassesEntry, entry::view::CharacterClassView>              sChrClassesStore;
 extern DBCStorage <ChrRacesEntry>                sChrRacesStore;
 extern DBCStorage <CinematicCameraEntry>         sCinematicCameraStore;
 extern DBCStorage <CinematicSequencesEntry>      sCinematicSequencesStore;

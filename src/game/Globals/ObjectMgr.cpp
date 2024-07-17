@@ -2979,7 +2979,7 @@ void ObjectMgr::LoadPlayerInfo()
                 continue;
             }
 
-            ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(current_class);
+            auto cEntry = sChrClassesStore.LookupEntry(current_class);
             if (!cEntry || !((1 << (current_class - 1)) & CLASSMASK_ALL_PLAYABLE))
             {
                 sLog.outErrorDb("Wrong class %u in `playercreateinfo` table, ignoring.", current_class);
@@ -3054,7 +3054,7 @@ void ObjectMgr::LoadPlayerInfo()
                     continue;
                 }
 
-                ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(current_class);
+                auto cEntry = sChrClassesStore.LookupEntry(current_class);
                 if (!cEntry || !((1 << (current_class - 1)) & CLASSMASK_ALL_PLAYABLE))
                 {
                     sLog.outErrorDb("Wrong class %u in `playercreateinfo_item` table, ignoring.", current_class);
@@ -3232,7 +3232,7 @@ void ObjectMgr::LoadPlayerInfo()
                     continue;
                 }
 
-                ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(current_class);
+                auto cEntry = sChrClassesStore.LookupEntry(current_class);
                 if (!cEntry || !((1 << (current_class - 1)) & CLASSMASK_ALL_PLAYABLE))
                 {
                     sLog.outErrorDb("Wrong class %u in `playercreateinfo_spell` table, ignoring.", current_class);
@@ -3292,7 +3292,7 @@ void ObjectMgr::LoadPlayerInfo()
                     continue;
                 }
 
-                ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(current_class);
+                auto cEntry = sChrClassesStore.LookupEntry(current_class);
                 if (!cEntry || !((1 << (current_class - 1)) & CLASSMASK_ALL_PLAYABLE))
                 {
                     sLog.outErrorDb("Wrong class %u in `playercreateinfo_action` table, ignoring.", current_class);
@@ -3449,7 +3449,7 @@ void ObjectMgr::LoadPlayerInfo()
                 continue;
             }
 
-            ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(current_class);
+            auto cEntry = sChrClassesStore.LookupEntry(current_class);
             if (!cEntry || !((1 << (current_class - 1)) & CLASSMASK_ALL_PLAYABLE))
             {
                 sLog.outErrorDb("Wrong class %u in `player_levelstats` table, ignoring.", current_class);
