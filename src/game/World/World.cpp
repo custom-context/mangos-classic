@@ -1432,7 +1432,7 @@ void World::DetectDBCLang()
         m_lang_confid = DEFAULT_LOCALE;
     }
 
-    ChrRacesEntry const* race = sChrRacesStore.LookupEntry(RACE_HUMAN);
+    auto race = sChrRacesStore.LookupEntry(RACE_HUMAN);
     MANGOS_ASSERT(race);
 
     std::string availableLocalsStr;
@@ -1440,7 +1440,7 @@ void World::DetectDBCLang()
     uint32 default_locale = MAX_LOCALE;
     for (int i = MAX_LOCALE - 1; i >= 0; --i)
     {
-        if (strlen(race->name[i]) > 0)                      // check by race names
+        if (strlen(race->GetName(i)) > 0)                      // check by race names
         {
             default_locale = i;
             m_availableDbcLocaleMask |= (1 << i);

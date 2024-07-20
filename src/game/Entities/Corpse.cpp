@@ -256,8 +256,8 @@ uint32 Corpse::GetFaction() const
 {
     if (const uint8 race = getRace())
     {
-        if (const ChrRacesEntry* raceEntry = sChrRacesStore.LookupEntry(race))
-            return raceEntry->FactionID;
+        if (auto raceEntry = sChrRacesStore.LookupEntry(race))
+            return raceEntry->GetFactionID();
     }
     return 0;
 }

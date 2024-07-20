@@ -370,7 +370,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     }
 
     auto classEntry = sChrClassesStore.LookupEntry(class_);
-    ChrRacesEntry const* raceEntry = sChrRacesStore.LookupEntry(race_);
+    auto raceEntry = sChrRacesStore.LookupEntry(race_);
 
     if (!classEntry || !raceEntry)
     {
@@ -804,8 +804,8 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     {
         pCurrChar->setCinematic(1);
 
-        if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
-            pCurrChar->SendCinematicStart(rEntry->CinematicSequence);
+        if (auto rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
+            pCurrChar->SendCinematicStart(rEntry->GetCinematicSequence());
     }
 
     uint32 miscRequirement = 0;

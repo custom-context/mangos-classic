@@ -295,8 +295,8 @@ void PlayerTaxi::InitTaxiNodes(uint32 race, uint32 /*level*/)
 {
     memset(m_taximask, 0, sizeof(m_taximask));
     // capital and taxi hub masks
-    ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(race);
-    m_taximask[0] = rEntry->startingTaxiMask;
+    auto rEntry = sChrRacesStore.LookupEntry(race);
+    m_taximask[0] = rEntry->GetStartingTaxiMask();
 }
 
 void PlayerTaxi::LoadTaxiMask(const char* data)
@@ -6212,33 +6212,33 @@ void Player::CheckAreaExploreAndOutdoor()
 
 Team Player::TeamForRace(uint8 race)
 {
-    ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(race);
+    auto rEntry = sChrRacesStore.LookupEntry(race);
     if (!rEntry)
     {
         sLog.outError("Race %u not found in DBC: wrong DBC files?", uint32(race));
         return ALLIANCE;
     }
 
-    switch (rEntry->TeamID)
+    switch (rEntry->GetTeamID())
     {
         case 7: return ALLIANCE;
         case 1: return HORDE;
     }
 
-    sLog.outError("Race %u have wrong teamid %u in DBC: wrong DBC files?", uint32(race), rEntry->TeamID);
+    sLog.outError("Race %u have wrong teamid %u in DBC: wrong DBC files?", uint32(race), rEntry->GetTeamID());
     return TEAM_NONE;
 }
 
 uint32 Player::getFactionForRace(uint8 race)
 {
-    ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(race);
+    auto rEntry = sChrRacesStore.LookupEntry(race);
     if (!rEntry)
     {
         sLog.outError("Race %u not found in DBC: wrong DBC files?", uint32(race));
         return 0;
     }
 
-    return rEntry->FactionID;
+    return rEntry->GetFactionID();
 }
 
 void Player::setFactionForRace(uint8 race)

@@ -6222,10 +6222,10 @@ bool ChatHandler::ShowPlayerListHelper(std::unique_ptr<QueryResult> queryResult,
             uint8 class_     = fields[3].GetUInt8();
             uint32 level     = fields[4].GetUInt32();
 
-            ChrRacesEntry const* raceEntry = sChrRacesStore.LookupEntry(race);
+            auto raceEntry = sChrRacesStore.LookupEntry(race);
             auto classEntry = sChrClassesStore.LookupEntry(class_);
 
-            char const* race_name = raceEntry   ? raceEntry->name[GetSessionDbcLocale()] : "<?>";
+            char const* race_name = raceEntry   ? raceEntry->GetName(GetSessionDbcLocale()) : "<?>";
             char const* class_name = classEntry ? classEntry->GetName(GetSessionDbcLocale()) : "<?>";
 
             if (!m_session)
