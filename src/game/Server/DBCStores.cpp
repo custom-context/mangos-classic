@@ -73,7 +73,7 @@ DBCStorage <CinematicCameraEntry> sCinematicCameraStore(CinematicCameraEntryfmt)
 DBCStorage <CinematicSequencesEntry> sCinematicSequencesStore(CinematicSequencesEntryfmt);
 DBCStorage <CreatureDisplayInfoEntry> sCreatureDisplayInfoStore(CreatureDisplayInfofmt);
 DBCStorage <CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore(CreatureDisplayInfoExtrafmt);
-DBCStorage <CreatureFamilyEntry> sCreatureFamilyStore(CreatureFamilyfmt);
+DBCStorage <CreatureFamilyEntry, entry::view::CreatureFamilyView> sCreatureFamilyStore(CreatureFamilyfmt);
 DBCStorage <CreatureModelDataEntry> sCreatureModelDataStore(CreatureModelDatafmt);
 DBCStorage <CreatureSpellDataEntry> sCreatureSpellDataStore(CreatureSpellDatafmt);
 DBCStorage <CreatureTypeEntry> sCreatureTypeStore(CreatureTypefmt);
@@ -367,11 +367,11 @@ void LoadDBCStores(const std::string& dataPath)
         {
             for (unsigned int i = 1; i < sCreatureFamilyStore.GetNumRows(); ++i)
             {
-                CreatureFamilyEntry const* cFamily = sCreatureFamilyStore.LookupEntry(i);
+                auto cFamily = sCreatureFamilyStore.LookupEntry(i);
                 if (!cFamily)
                     continue;
 
-                if (skillLine->skillId != cFamily->skillLine[0] && skillLine->skillId != cFamily->skillLine[1])
+                if (skillLine->skillId != std::get<0>(cFamily->GetSkillLine()) && skillLine->skillId != std::get<1>(cFamily->GetSkillLine()))
                     continue;
 
                 sPetFamilySpellsStore[i].insert(spellInfo->Id);
@@ -606,10 +606,10 @@ char const* GetPetName(uint32 petfamily, uint32 dbclang)
 {
     if (!petfamily)
         return nullptr;
-    CreatureFamilyEntry const* pet_family = sCreatureFamilyStore.LookupEntry(petfamily);
+    auto pet_family = sCreatureFamilyStore.LookupEntry(petfamily);
     if (!pet_family)
         return nullptr;
-    return pet_family->Name[dbclang] ? pet_family->Name[dbclang] : nullptr;
+    return pet_family->GetName(dbclang);
 }
 
 TalentSpellPos const* GetTalentSpellPos(uint32 spellId)

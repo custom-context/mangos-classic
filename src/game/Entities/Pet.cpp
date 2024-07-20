@@ -1174,8 +1174,8 @@ bool Pet::CreateBaseAtCreature(Creature* creature)
     SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, sObjectMgr.GetXPForPetLevel(creature->GetLevel()));
     SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
-    if (CreatureFamilyEntry const* cFamily = sCreatureFamilyStore.LookupEntry(cInfo->Family))
-        SetName(cFamily->Name[sWorld.GetDefaultDbcLocale()]);
+    if (auto cFamily = sCreatureFamilyStore.LookupEntry(cInfo->Family))
+        SetName(cFamily->GetName(sWorld.GetDefaultDbcLocale()));
     else
         SetName(creature->GetNameForLocaleIdx(sObjectMgr.GetDbc2StorageLocaleIndex()));
 
@@ -1234,17 +1234,17 @@ void Pet::InitStatsForLevel(uint32 petlevel)
     {
         case HUNTER_PET:
         {
-            CreatureFamilyEntry const* cFamily = sCreatureFamilyStore.LookupEntry(cInfo->Family);
+            auto cFamily = sCreatureFamilyStore.LookupEntry(cInfo->Family);
 
-            if (cFamily && cFamily->minScale > 0.0f)
+            if (cFamily && cFamily->GetMinScale() > 0.0f)
             {
                 float scale;
-                if (GetLevel() >= cFamily->maxScaleLevel)
-                    scale = cFamily->maxScale;
-                else if (GetLevel() <= cFamily->minScaleLevel)
-                    scale = cFamily->minScale;
+                if (GetLevel() >= cFamily->GetMaxScaleLevel())
+                    scale = cFamily->GetMaxScale();
+                else if (GetLevel() <= cFamily->GetMinScaleLevel())
+                    scale = cFamily->GetMinScale();
                 else
-                    scale = cFamily->minScale + float(GetLevel() - cFamily->minScaleLevel) / cFamily->maxScaleLevel * (cFamily->maxScale - cFamily->minScale);
+                    scale = cFamily->GetMinScale() + float(GetLevel() - cFamily->GetMinScaleLevel()) / cFamily->GetMaxScaleLevel() * (cFamily->GetMaxScale() - cFamily->GetMinScale());
 
                 SetObjectScale(scale);
                 UpdateModelData();
@@ -1430,11 +1430,11 @@ bool Pet::HaveInDiet(ItemPrototype const* item) const
     if (!cInfo)
         return false;
 
-    CreatureFamilyEntry const* cFamily = sCreatureFamilyStore.LookupEntry(cInfo->Family);
+    auto cFamily = sCreatureFamilyStore.LookupEntry(cInfo->Family);
     if (!cFamily)
         return false;
 
-    uint32 diet = cFamily->petFoodMask;
+    uint32 diet = cFamily->GetPetFoodMask();
     uint32 FoodMask = 1 << (item->FoodType - 1);
     return (diet & FoodMask) != 0;
 }
@@ -2144,11 +2144,11 @@ void Pet::LearnPetPassives()
     if (!cInfo)
         return;
 
-    CreatureFamilyEntry const* cFamily = sCreatureFamilyStore.LookupEntry(cInfo->Family);
+    auto cFamily = sCreatureFamilyStore.LookupEntry(cInfo->Family);
     if (!cFamily)
         return;
 
-    PetFamilySpellsStore::const_iterator petStore = sPetFamilySpellsStore.find(cFamily->ID);
+    PetFamilySpellsStore::const_iterator petStore = sPetFamilySpellsStore.find(cFamily->GetID());
     if (petStore != sPetFamilySpellsStore.end())
     {
         for (uint32 petSet : petStore->second)
