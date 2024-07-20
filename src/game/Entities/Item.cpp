@@ -31,7 +31,7 @@ void AddItemsSetItem(Player* player, Item* item)
     ItemPrototype const* proto = item->GetProto();
     uint32 setid = proto->ItemSet;
 
-    ItemSetEntry const* set = sItemSetStore.LookupEntry(setid);
+    auto set = sItemSetStore.LookupEntry(setid);
 
     if (!set)
     {
@@ -39,7 +39,7 @@ void AddItemsSetItem(Player* player, Item* item)
         return;
     }
 
-    if (set->required_skill_id && player->GetSkillValue(set->required_skill_id) < set->required_skill_value)
+    if (set->GetRequiredSkillID() && player->GetSkillValue(set->GetRequiredSkillID()) < set->GetRequiredSkillRank())
         return;
 
     ItemSetEffect* eff = player->GetItemSetEffect(setid);
@@ -49,17 +49,17 @@ void AddItemsSetItem(Player* player, Item* item)
 
     ++eff->item_count;
 
-    for (uint32 x = 0; x < 8; ++x)
+    for (uint32 x = 0; x < set->GetSpellIDsSize(); ++x)
     {
-        if (!set->spells[x])
+        if (!set->GetSpellID(x))
             continue;
         // not enough for  spell
-        if (set->items_to_triggerspell[x] > eff->item_count)
+        if (set->GetTriggerSpellByItemID(x) > eff->item_count)
             continue;
 
         uint32 z = 0;
         for (; z < 8; ++z)
-            if (eff->spells[z] && eff->spells[z]->Id == set->spells[x])
+            if (eff->spells[z] && eff->spells[z]->Id == set->GetSpellID(x))
                 break;
 
         if (z < 8)
@@ -70,10 +70,10 @@ void AddItemsSetItem(Player* player, Item* item)
         {
             if (!spell)                            // free slot
             {
-                SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(set->spells[x]);
+                SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(set->GetSpellID(x));
                 if (!spellInfo)
                 {
-                    sLog.outError("WORLD: unknown spell id %u in items set %u effects", set->spells[x], setid);
+                    sLog.outError("WORLD: unknown spell id %u in items set %u effects", set->GetSpellID(x), setid);
                     break;
                 }
 
@@ -90,7 +90,7 @@ void RemoveItemsSetItem(Player* player, ItemPrototype const* proto)
 {
     uint32 setid = proto->ItemSet;
 
-    ItemSetEntry const* set = sItemSetStore.LookupEntry(setid);
+    auto set = sItemSetStore.LookupEntry(setid);
 
     if (!set)
     {
@@ -106,18 +106,18 @@ void RemoveItemsSetItem(Player* player, ItemPrototype const* proto)
 
     --eff->item_count;
 
-    for (uint32 x = 0; x < 8; ++x)
+    for (uint32 x = 0; x < set->GetSpellIDsSize(); ++x)
     {
-        if (!set->spells[x])
+        if (!set->GetSpellID(x))
             continue;
 
         // enough for spell
-        if (set->items_to_triggerspell[x] <= eff->item_count)
+        if (set->GetTriggerSpellByItemID(x) <= eff->item_count)
             continue;
 
         for (auto& spell : eff->spells)
         {
-            if (spell && spell->Id == set->spells[x])
+            if (spell && spell->Id == set->GetSpellID(x))
             {
                 // spell can be not active if not fit form requirement
                 player->ApplyEquipSpell(spell, nullptr, false);

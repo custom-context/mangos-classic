@@ -112,7 +112,7 @@ extern DBCStorage <ItemBagFamilyEntry>           sItemBagFamilyStore;
 extern DBCStorage <ItemClassEntry, entry::view::ItemClassView>               sItemClassStore;
 // extern DBCStorage <ItemDisplayInfoEntry>      sItemDisplayInfoStore; -- not used currently
 extern DBCStorage <ItemRandomPropertiesEntry>    sItemRandomPropertiesStore;
-extern DBCStorage <ItemSetEntry>                 sItemSetStore;
+extern DBCStorage <ItemSetEntry, entry::view::ItemSetView>                 sItemSetStore;
 extern DBCStorage <LiquidTypeEntry>              sLiquidTypeStore;
 extern DBCStorage <LockEntry>                    sLockStore;
 extern DBCStorage <MailTemplateEntry>            sMailTemplateStore;

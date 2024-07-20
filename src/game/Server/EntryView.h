@@ -466,7 +466,7 @@ public:
 
     auto GetTriggerSpellByItemID(size_t idx) const noexcept {
         assert(idx < GetItemsIDsToSpellTriggersMapSize());
-        return GetRaw()->spells[idx];
+        return GetRaw()->items_to_triggerspell[idx];
     }
 
     auto GetRequiredSkillID() const noexcept {

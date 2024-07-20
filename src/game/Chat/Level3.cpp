@@ -2459,11 +2459,11 @@ bool ChatHandler::HandleLookupItemSetCommand(char* args)
     // Search in ItemSet.dbc
     for (uint32 id = 0; id < sItemSetStore.GetNumRows(); ++id)
     {
-        ItemSetEntry const* set = sItemSetStore.LookupEntry(id);
+        auto set = sItemSetStore.LookupEntry(id);
         if (set)
         {
             int loc = GetSessionDbcLocale();
-            std::string name = set->name[loc];
+            std::string name = set->GetName(loc);
             if (name.empty())
                 continue;
 
@@ -2475,7 +2475,7 @@ bool ChatHandler::HandleLookupItemSetCommand(char* args)
                     if (loc == GetSessionDbcLocale())
                         continue;
 
-                    name = set->name[loc];
+                    name = set->GetName(loc);
                     if (name.empty())
                         continue;
 
