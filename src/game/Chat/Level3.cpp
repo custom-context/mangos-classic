@@ -1189,7 +1189,7 @@ bool ChatHandler::HandleSetSkillCommand(char* args)
         return false;
     }
 
-    SkillLineEntry const* sl = sSkillLineStore.LookupEntry(skill);
+    auto sl = sSkillLineStore.LookupEntry(skill);
     if (!sl)
     {
         PSendSysMessage(LANG_INVALID_SKILL_ID, skill);
@@ -1201,7 +1201,7 @@ bool ChatHandler::HandleSetSkillCommand(char* args)
 
     if (!target->GetSkillValue(skill))
     {
-        PSendSysMessage(LANG_SET_SKILL_ERROR, tNameLink.c_str(), skill, sl->name[GetSessionDbcLocale()]);
+        PSendSysMessage(LANG_SET_SKILL_ERROR, tNameLink.c_str(), skill, sl->GetName(GetSessionDbcLocale()));
         SetSentErrorMessage(true);
         return false;
     }
@@ -1210,7 +1210,7 @@ bool ChatHandler::HandleSetSkillCommand(char* args)
         return false;
 
     target->SetSkill(skill, level, maxskill);
-    PSendSysMessage(LANG_SET_SKILL, skill, sl->name[GetSessionDbcLocale()], tNameLink.c_str(), level, maxskill);
+    PSendSysMessage(LANG_SET_SKILL, skill, sl->GetName(GetSessionDbcLocale()), tNameLink.c_str(), level, maxskill);
 
     return true;
 }
@@ -2522,11 +2522,11 @@ bool ChatHandler::HandleLookupSkillCommand(char* args)
     // Search in SkillLine.dbc
     for (uint32 id = 0; id < sSkillLineStore.GetNumRows(); ++id)
     {
-        SkillLineEntry const* skillInfo = sSkillLineStore.LookupEntry(id);
+        auto skillInfo = sSkillLineStore.LookupEntry(id);
         if (skillInfo)
         {
             int loc = GetSessionDbcLocale();
-            std::string name = skillInfo->name[loc];
+            std::string name = skillInfo->GetName(loc);
             if (name.empty())
                 continue;
 
@@ -2538,7 +2538,7 @@ bool ChatHandler::HandleLookupSkillCommand(char* args)
                     if (loc == GetSessionDbcLocale())
                         continue;
 
-                    name = skillInfo->name[loc];
+                    name = skillInfo->GetName(loc);
                     if (name.empty())
                         continue;
 

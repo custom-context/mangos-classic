@@ -118,7 +118,7 @@ extern DBCStorage <LockEntry>                    sLockStore;
 extern DBCStorage <MailTemplateEntry>            sMailTemplateStore;
 extern DBCStorage <MapEntry, entry::view::MapView>                     sMapStore;
 extern DBCStorage <QuestSortEntry>               sQuestSortStore;
-extern DBCStorage <SkillLineEntry>               sSkillLineStore;
+extern DBCStorage <SkillLineEntry, entry::view::SkillLineView>               sSkillLineStore;
 extern DBCStorage <SkillLineAbilityEntry>        sSkillLineAbilityStore;
 extern DBCStorage <SkillRaceClassInfoEntry>      sSkillRaceClassInfoStore;
 extern DBCStorage <SkillTiersEntry>              sSkillTiersStore;

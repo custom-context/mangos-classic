@@ -746,7 +746,7 @@ bool ConditionEntry::IsValid() const
         case CONDITION_SKILL:
         case CONDITION_SKILL_BELOW:
         {
-            SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(m_value1);
+            auto pSkill = sSkillLineStore.LookupEntry(m_value1);
             if (!pSkill)
             {
                 sLog.outErrorDb("Skill condition (entry %u, type %u) specifies non-existing skill (%u), skipped", m_entry, m_condition, m_value1);

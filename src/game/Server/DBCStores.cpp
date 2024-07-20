@@ -116,7 +116,7 @@ DBCStorage <MapEntry, entry::view::MapView> sMapStore(MapEntryfmt);
 
 DBCStorage <QuestSortEntry> sQuestSortStore(QuestSortEntryfmt);
 
-DBCStorage <SkillLineEntry> sSkillLineStore(SkillLinefmt);
+DBCStorage <SkillLineEntry, entry::view::SkillLineView> sSkillLineStore(SkillLinefmt);
 DBCStorage <SkillLineAbilityEntry> sSkillLineAbilityStore(SkillLineAbilityfmt);
 DBCStorage <SkillRaceClassInfoEntry> sSkillRaceClassInfoStore(SkillRaceClassInfofmt);
 DBCStorage <SkillTiersEntry> sSkillTiersStore(SkillTiersfmt);

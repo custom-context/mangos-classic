@@ -532,7 +532,7 @@ public:
         return GetRaw()->id;
     }
 
-    auto GetCategoryId() const noexcept {
+    auto GetCategoryID() const noexcept {
         return GetRaw()->categoryId;
     }
 

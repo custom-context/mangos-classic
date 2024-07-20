@@ -5372,7 +5372,7 @@ void Player::SetSkill(uint16 id, uint16 value, uint16 max, uint16 step/* = 0*/)
     {
         if (!exists)
         {
-            SkillLineEntry const* entry = sSkillLineStore.LookupEntry(id);
+            auto entry = sSkillLineStore.LookupEntry(id);
             if (!entry)
             {
                 sLog.outError("Skill not found in SkillLineStore: skill #%u", id);
@@ -5562,7 +5562,7 @@ void Player::UpdateSkillsForLevel(bool maximize/* = false*/)
 
         uint16 skillId = uint16(pair.first);
 
-        SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(skillId);
+        auto pSkill = sSkillLineStore.LookupEntry(skillId);
         if (!pSkill)
             continue;
 
@@ -5670,11 +5670,11 @@ void Player::UpdateSpellTrainedSkills(uint32 spellId, bool apply)
         {
             SkillLineAbilityEntry const* info = itr->second;
 
-            SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(info->skillId);
+            auto pSkill = sSkillLineStore.LookupEntry(info->skillId);
             if (!pSkill)
                 continue;
 
-            const uint16 skillId = uint16(pSkill->id);
+            const uint16 skillId = uint16(pSkill->GetID());
 
             switch (skillId)            // Legacy workarounds:
             {
@@ -5711,9 +5711,9 @@ void Player::UpdateSpellTrainedSkills(uint32 spellId, bool apply)
                         // - Two-Handed Axes/Maces (Enhancement Talent) - Skill levels gained
                         //   with these two weapons will now be retained if you decide to unspend
                         //   this talent point and return to it later.
-                        if (pSkill->categoryId == SKILL_CATEGORY_WEAPON)
+                        if (pSkill->GetCategoryID() == SKILL_CATEGORY_WEAPON)
                         {
-                            const auto savedValue = m_forgottenSkills.find(pSkill->id);
+                            const auto savedValue = m_forgottenSkills.find(pSkill->GetID());
 
                             if (savedValue != m_forgottenSkills.end())
                                 if (savedValue->second <= GetSkillMaxForLevel())
@@ -5734,7 +5734,7 @@ void Player::UpdateSpellTrainedSkills(uint32 spellId, bool apply)
             }
             else
             {
-                switch (pSkill->categoryId)         // Legacy workarounds:
+                switch (pSkill->GetCategoryID())         // Legacy workarounds:
                 {
                     case SKILL_CATEGORY_CLASS:      // not unlearn class skills (spellbook/talent pages)
                         continue;
@@ -5751,9 +5751,9 @@ void Player::UpdateSpellTrainedSkills(uint32 spellId, bool apply)
                         // - Two-Handed Axes/Maces (Enhancement Talent) - Skill levels gained
                         //   with these two weapons will now be retained if you decide to unspend
                         //   this talent point and return to it later.
-                        if (pSkill->categoryId == SKILL_CATEGORY_WEAPON)
-                            if (GetSkillValuePure(pSkill->id) > m_forgottenSkills[pSkill->id])
-                                m_forgottenSkills[pSkill->id] = GetSkillValuePure(pSkill->id);
+                        if (pSkill->GetCategoryID() == SKILL_CATEGORY_WEAPON)
+                            if (GetSkillValuePure(pSkill->GetID()) > m_forgottenSkills[pSkill->GetID()])
+                                m_forgottenSkills[pSkill->GetID()] = GetSkillValuePure(pSkill->GetID());
 
                         SetSkill(skillId, 0, 0);
                         break;
@@ -5779,7 +5779,7 @@ void Player::LearnDefaultSkills()
         uint16 max = 0;
         uint16 step = 0;
 
-        if (SkillLineEntry const* entry = sSkillLineStore.LookupEntry(tskill.SkillId))
+        if (auto entry = sSkillLineStore.LookupEntry(tskill.SkillId))
         {
             switch (GetSkillRangeType(entry, false))
             {
@@ -13922,14 +13922,14 @@ void Player::_LoadForgottenSkills(std::unique_ptr<QueryResult> queryResult)
             uint16 skill = fields[0].GetUInt16();
             uint16 value = fields[1].GetUInt16();
 
-            SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(skill);
+            auto pSkill = sSkillLineStore.LookupEntry(skill);
             if (!pSkill)
             {
                 sLog.outError("Character %u has saved value for forgotten skill %u that does not exist.", GetGUIDLow(), skill);
                 continue;
             }
 
-            if (pSkill->categoryId != SKILL_CATEGORY_WEAPON)
+            if (pSkill->GetCategoryID() != SKILL_CATEGORY_WEAPON)
             {
                 sLog.outError("Character %u has saved value for forgotten skill %u that is not a weapon skill.", GetGUIDLow(), skill);
                 continue;
@@ -19407,7 +19407,7 @@ void Player::_LoadSkills(std::unique_ptr<QueryResult> queryResult)
             uint16 value    = fields[1].GetUInt16();
             uint16 max      = fields[2].GetUInt16();
 
-            SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(skill);
+            auto pSkill = sSkillLineStore.LookupEntry(skill);
             if (!pSkill)
             {
                 sLog.outError("Character %u has skill %u that does not exist.", GetGUIDLow(), skill);

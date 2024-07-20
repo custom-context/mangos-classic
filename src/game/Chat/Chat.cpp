@@ -2027,7 +2027,7 @@ bool ChatHandler::CheckEscapeSequences(const char* message)
                                 return false;
                             }
 
-                            SkillLineEntry const* skillLine = sSkillLineStore.LookupEntry(skillInfo->skillId);
+                            auto skillLine = sSkillLineStore.LookupEntry(skillInfo->skillId);
                             if (!skillLine)
                             {
                                 return false;
@@ -2035,8 +2035,8 @@ bool ChatHandler::CheckEscapeSequences(const char* message)
 
                             for (uint8 i = 0; i < MAX_LOCALE; ++i)
                             {
-                                uint32 skillLineNameLength = strlen(skillLine->name[i]);
-                                if (skillLineNameLength > 0 && strncmp(skillLine->name[i], buffer, skillLineNameLength) == 0)
+                                uint32 skillLineNameLength = strlen(skillLine->GetName(i));
+                                if (skillLineNameLength > 0 && strncmp(skillLine->GetName(i), buffer, skillLineNameLength) == 0)
                                 {
                                     // found the prefix, remove it to perform spellname validation below
                                     // -2 = strlen(": ")

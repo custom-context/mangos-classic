@@ -4170,13 +4170,13 @@ bool ChatHandler::HandleLearnAllCraftsCommand(char* /*args*/)
 {
     for (uint32 i = 0; i < sSkillLineStore.GetNumRows(); ++i)
     {
-        SkillLineEntry const* skillInfo = sSkillLineStore.LookupEntry(i);
+        auto skillInfo = sSkillLineStore.LookupEntry(i);
         if (!skillInfo)
             continue;
 
-        if (skillInfo->categoryId == SKILL_CATEGORY_PROFESSION || skillInfo->categoryId == SKILL_CATEGORY_SECONDARY)
+        if (skillInfo->GetCategoryID() == SKILL_CATEGORY_PROFESSION || skillInfo->GetCategoryID() == SKILL_CATEGORY_SECONDARY)
         {
-            HandleLearnSkillRecipesHelper(m_session->GetPlayer(), skillInfo->id);
+            HandleLearnSkillRecipesHelper(m_session->GetPlayer(), skillInfo->GetID());
         }
     }
 
@@ -4209,19 +4209,19 @@ bool ChatHandler::HandleLearnAllRecipesCommand(char* args)
 
     std::string name;
 
-    SkillLineEntry const* targetSkillInfo = nullptr;
+    entry::view::SkillLineView targetSkillInfo{};
     for (uint32 i = 1; i < sSkillLineStore.GetNumRows(); ++i)
     {
-        SkillLineEntry const* skillInfo = sSkillLineStore.LookupEntry(i);
+        auto skillInfo = sSkillLineStore.LookupEntry(i);
         if (!skillInfo)
             continue;
 
-        if (skillInfo->categoryId != SKILL_CATEGORY_PROFESSION &&
-                skillInfo->categoryId != SKILL_CATEGORY_SECONDARY)
+        if (skillInfo->GetCategoryID() != SKILL_CATEGORY_PROFESSION &&
+                skillInfo->GetCategoryID() != SKILL_CATEGORY_SECONDARY)
             continue;
 
         int loc = GetSessionDbcLocale();
-        name = skillInfo->name[loc];
+        name = skillInfo->GetName(loc);
         if (name.empty())
             continue;
 
@@ -4233,7 +4233,7 @@ bool ChatHandler::HandleLearnAllRecipesCommand(char* args)
                 if (loc == GetSessionDbcLocale())
                     continue;
 
-                name = skillInfo->name[loc];
+                name = skillInfo->GetName(loc);
                 if (name.empty())
                     continue;
 
@@ -4252,10 +4252,10 @@ bool ChatHandler::HandleLearnAllRecipesCommand(char* args)
     if (!targetSkillInfo)
         return false;
 
-    HandleLearnSkillRecipesHelper(target, targetSkillInfo->id);
+    HandleLearnSkillRecipesHelper(target, targetSkillInfo->GetID());
 
-    uint16 maxLevel = target->GetSkillMaxPure(targetSkillInfo->id);
-    target->SetSkill(targetSkillInfo->id, maxLevel, maxLevel);
+    uint16 maxLevel = target->GetSkillMaxPure(targetSkillInfo->GetID());
+    target->SetSkill(targetSkillInfo->GetID(), maxLevel, maxLevel);
     PSendSysMessage(LANG_COMMAND_LEARN_ALL_RECIPES, name.c_str());
     return true;
 }

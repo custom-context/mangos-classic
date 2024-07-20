@@ -7970,9 +7970,9 @@ void PlayerbotAI::_HandleCommandSkill(std::string& text, Player& fromPlayer)
         msg << "\nMy Weapon skills: ";
         for (std::list<uint32>::iterator it = m_spellsToLearn.begin(); it != m_spellsToLearn.end(); ++it)
         {
-            SkillLineEntry const* SkillLine = sSkillLineStore.LookupEntry(*it);
+            auto SkillLine = sSkillLineStore.LookupEntry(*it);
             // has weapon skill
-            if (SkillLine->categoryId == SKILL_CATEGORY_WEAPON)
+            if (SkillLine->GetCategoryID() == SKILL_CATEGORY_WEAPON)
             {
                 for (uint32 j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
                 {

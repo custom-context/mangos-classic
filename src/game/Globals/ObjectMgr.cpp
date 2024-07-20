@@ -8388,21 +8388,21 @@ bool ObjectMgr::IsCombatConditionSatisfied(int32 conditionId, Unit const* source
     return m_combatConditionMgr->Meets(source, conditionId, range);
 }
 
-SkillRangeType GetSkillRangeType(SkillLineEntry const* pSkill, bool racial)
+SkillRangeType GetSkillRangeType(entry::view::SkillLineView pSkill, bool racial)
 {
-    switch (pSkill->categoryId)
+    switch (pSkill->GetCategoryID())
     {
         case SKILL_CATEGORY_LANGUAGES: return SKILL_RANGE_LANGUAGE;
         case SKILL_CATEGORY_WEAPON:
         {
-            if (pSkill->id != SKILL_FIST_WEAPONS)
+            if (pSkill->GetID() != SKILL_FIST_WEAPONS)
                 return SKILL_RANGE_LEVEL;
             return SKILL_RANGE_MONO;
         }
         case SKILL_CATEGORY_ARMOR:
         case SKILL_CATEGORY_CLASS:
         {
-            if (pSkill->id != SKILL_POISONS && pSkill->id != SKILL_LOCKPICKING)
+            if (pSkill->GetID() != SKILL_POISONS && pSkill->GetID() != SKILL_LOCKPICKING)
                 return SKILL_RANGE_MONO;
             return SKILL_RANGE_LEVEL;
         }
@@ -8410,7 +8410,7 @@ SkillRangeType GetSkillRangeType(SkillLineEntry const* pSkill, bool racial)
         case SKILL_CATEGORY_PROFESSION:
         {
             // not set skills for professions and racial abilities
-            if (IsProfessionOrRidingSkill(pSkill->id))
+            if (IsProfessionOrRidingSkill(pSkill->GetID()))
                 return SKILL_RANGE_RANK;
             if (racial)
                 return SKILL_RANGE_NONE;
