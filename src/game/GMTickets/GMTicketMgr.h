@@ -241,7 +241,7 @@ class GMTicketMgr
         static inline const char* PrintTicketStatusColorSequence(GMTicket const& ticket);
         static inline const std::string PrintTicketSummaryLine(GMTicket const& ticket, LocaleConstant locale = DEFAULT_LOCALE);
 
-        void PrintTicketList(WorldSession* session, std::ostringstream& output, size_t max, const GMTicketCategoryEntry* category = nullptr, bool online = false) const;
+        void PrintTicketList(WorldSession* session, std::ostringstream& output, size_t max, entry::view::GMTicketCategoryView category = {}, bool online = false) const;
 
         static bool TicketChatIncoming(GMTicket* ticket, Player* player, WorldSession* gm, const std::string& message, bool addon = false);
         static bool TicketChatOutgoing(GMTicket* ticket, WorldSession* gm, Player* player, const std::string& message, bool addon = false);
@@ -267,7 +267,7 @@ class GMTicketMgr
         CommandResult Comment(GMTicket* ticket, WorldSession* session, const std::string& text);
         CommandResult Read(GMTicket* ticket);
         inline CommandResult Resolve(GMTicket* ticket, const std::string& commentary, WorldSession* session = nullptr) { return Close(ticket, commentary, true, session); }
-        CommandResult Sort(GMTicket* ticket, const GMTicketCategoryEntry& category, WorldSession* session = nullptr);
+        CommandResult Sort(GMTicket* ticket, entry::view::GMTicketCategoryView category, WorldSession* session = nullptr);
         CommandResult Update(GMTicket* ticket, const std::string& text);
         CommandResult Whisper(GMTicket* ticket, const std::string& message, WorldSession* session = nullptr);
 

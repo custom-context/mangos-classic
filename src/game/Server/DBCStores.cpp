@@ -99,9 +99,9 @@ DBCStorage <GameObjectArtKitEntry> sGameObjectArtKitStore(GameObjectArtKitfmt);
 DBCStorage <GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore(GameObjectDisplayInfofmt);
 
 DBCStorage <GMSurveyCurrentSurveyEntry> sGMSurveyCurrentSurveyStore(GMSurveyCurrentSurveyfmt);
-DBCStorage <GMSurveyQuestionsEntry> sGMSurveyQuestionsStore(GMSurveyQuestionsfmt);
+DBCStorage <GMSurveyQuestionsEntry, entry::view::GMSurveyQuestionsView> sGMSurveyQuestionsStore(GMSurveyQuestionsfmt);
 DBCStorage <GMSurveyEntry> sGMSurveySurveysStore(GMSurveySurveysfmt);
-DBCStorage <GMTicketCategoryEntry> sGMTicketCategoryStore(GMTicketCategoryfmt);
+DBCStorage <GMTicketCategoryEntry, entry::view::GMTicketCategoryView> sGMTicketCategoryStore(GMTicketCategoryfmt);
 
 DBCStorage <ItemBagFamilyEntry>           sItemBagFamilyStore(ItemBagFamilyfmt);
 DBCStorage <ItemClassEntry>               sItemClassStore(ItemClassfmt);

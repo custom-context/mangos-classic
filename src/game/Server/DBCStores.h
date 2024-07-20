@@ -104,9 +104,9 @@ extern DBCStorage <GameObjectArtKitEntry>   sGameObjectArtKitStore;
 extern DBCStorage <GameObjectDisplayInfoEntry>   sGameObjectDisplayInfoStore;
 
 extern DBCStorage <GMSurveyCurrentSurveyEntry>   sGMSurveyCurrentSurveyStore;
-extern DBCStorage <GMSurveyQuestionsEntry>       sGMSurveyQuestionsStore;
+extern DBCStorage <GMSurveyQuestionsEntry, entry::view::GMSurveyQuestionsView>       sGMSurveyQuestionsStore;
 extern DBCStorage <GMSurveyEntry>                sGMSurveySurveysStore;
-extern DBCStorage <GMTicketCategoryEntry>        sGMTicketCategoryStore;
+extern DBCStorage <GMTicketCategoryEntry, entry::view::GMTicketCategoryView>        sGMTicketCategoryStore;
 
 extern DBCStorage <ItemBagFamilyEntry>           sItemBagFamilyStore;
 extern DBCStorage <ItemClassEntry>               sItemClassStore;

@@ -199,9 +199,9 @@ bool ChatHandler::HandleTicketSortCommand(char* args)
     if (!ExtractUInt32(&args, categoryId))
         return false;
 
-    if (GMTicketCategoryEntry const* category = sGMTicketCategoryStore.LookupEntry(categoryId))
+    if (auto category = sGMTicketCategoryStore.LookupEntry(categoryId))
     {
-        if (!HandleTicketMgrCommandResult(*this, ticketId, sTicketMgr.Sort(sTicketMgr.GetTicketById(ticketId), *category, m_session)))
+        if (!HandleTicketMgrCommandResult(*this, ticketId, sTicketMgr.Sort(sTicketMgr.GetTicketById(ticketId), category, m_session)))
         {
             SetSentErrorMessage(true);
             return false;
@@ -257,7 +257,7 @@ bool ChatHandler::HandleTicketsListCommand(char* args)
     const bool last = ExtractUInt32(&args, max);
     const bool online = ExtractLiteralArg(&args, "online");
 
-    GMTicketCategoryEntry const* category = nullptr;
+    entry::view::GMTicketCategoryView category{};
 
     if (first)
     {

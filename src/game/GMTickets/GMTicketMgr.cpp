@@ -455,10 +455,10 @@ const std::string GMTicketMgr::PrintMailResponse(GMTicket const& ticket, bool re
 
 const char* GMTicketMgr::PrintTicketCategory(GMTicket const& ticket, LocaleConstant locale/* = LOCALE_DEFAULT*/)
 {
-    if (GMTicketCategoryEntry const* entry = sGMTicketCategoryStore.LookupEntry(ticket.GetCategory()))
+    if (auto entry = sGMTicketCategoryStore.LookupEntry(ticket.GetCategory()))
     {
-        if (!std::string(entry->name[locale]).empty())
-            return entry->name[locale];
+        if (!std::string(entry->GetName(locale)).empty())
+            return entry->GetName(locale);
         else
             return PrintTicketCategory(ticket, sWorld.GetDefaultDbcLocale());
     }
@@ -549,14 +549,14 @@ const std::string GMTicketMgr::PrintTicketSummaryLine(const GMTicket& ticket, Lo
     return ss.str();
 }
 
-void GMTicketMgr::PrintTicketList(WorldSession* session, std::ostringstream& output, size_t max, GMTicketCategoryEntry const* category/* = nullptr*/, bool online/* = false*/) const
+void GMTicketMgr::PrintTicketList(WorldSession* session, std::ostringstream& output, size_t max, entry::view::GMTicketCategoryView category/* = nullptr*/, bool online/* = false*/) const
 {
     size_t count = 0;
     std::ostringstream tickets;
 
     for (auto itr = m_list.begin(); (itr != m_list.end() && count < max); ++itr)
     {
-        if ((*itr)->IsOpen() && (!category || (*itr)->GetCategory() == category->ID))
+        if ((*itr)->IsOpen() && (!category || (*itr)->GetCategory() == category->GetID()))
         {
             if (online && !sObjectMgr.GetPlayer((*itr)->GetAuthorGuid()))
                 continue;
@@ -1071,20 +1071,20 @@ GMTicketMgr::CommandResult GMTicketMgr::Read(GMTicket* ticket)
     return COMMAND_RESULT_SUCCESS;
 }
 
-GMTicketMgr::CommandResult GMTicketMgr::Sort(GMTicket* ticket, const GMTicketCategoryEntry& category, WorldSession* session/* = nullptr*/)
+GMTicketMgr::CommandResult GMTicketMgr::Sort(GMTicket* ticket, entry::view::GMTicketCategoryView category, WorldSession* session/* = nullptr*/)
 {
     CommandResult result = CanSort(ticket, session);
 
     if (result != COMMAND_RESULT_SUCCESS)
         return result;
 
-    if (ticket->GetCategory() != category.ID)
+    if (ticket->GetCategory() != category->GetID())
     {
-        ticket->SetCategory(uint8(category.ID));
+        ticket->SetCategory(uint8(category->GetID()));
 
         Save(ticket);
 
-        sWorld.SendWorldTextToAcceptingTickets(LANG_TICKET_BROADCAST_CATEGORY, ticket->GetIdTag().c_str(), PrintTicketCategory(*ticket, sWorld.GetDefaultDbcLocale()), category.ID, session->GetPlayerName());
+        sWorld.SendWorldTextToAcceptingTickets(LANG_TICKET_BROADCAST_CATEGORY, ticket->GetIdTag().c_str(), PrintTicketCategory(*ticket, sWorld.GetDefaultDbcLocale()), category->GetID(), session->GetPlayerName());
 
         if (Player* character = sObjectMgr.GetPlayer(ticket->GetAuthorGuid()))
             character->GetSession()->SendGMTicketResult(SMSG_GM_TICKET_STATUS_UPDATE, GMTICKET_STATUS_UPDATED);
