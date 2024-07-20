@@ -774,7 +774,7 @@ bool FollowMovementGenerator::IsBoostAllowed(Unit& owner) const
         return false;
 
     // Do not allow speed boosting when in pvp instances
-    if (const MapEntry* map = sMapStore.LookupEntry(owner.GetMapId()))
+    if (auto map = sMapStore.LookupEntry(owner.GetMapId()))
         if (map->IsBattleGround())
             return false;
 

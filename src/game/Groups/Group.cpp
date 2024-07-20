@@ -1339,7 +1339,7 @@ void Group::ResetInstances(InstanceResetMethod method, Player* SendMsgTo)
     for (BoundInstancesMap::iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end();)
     {
         DungeonPersistentState* state = itr->second.state;
-        const MapEntry* entry = sMapStore.LookupEntry(itr->first);
+        auto entry = sMapStore.LookupEntry(itr->first);
         if (!entry || (!state->CanReset() && method != INSTANCE_RESET_GROUP_DISBAND))
         {
             ++itr;
@@ -1349,7 +1349,7 @@ void Group::ResetInstances(InstanceResetMethod method, Player* SendMsgTo)
         if (method == INSTANCE_RESET_ALL)
         {
             // the "reset all instances" method can only reset normal maps
-            if (entry->map_type == MAP_RAID)
+            if (entry->GetMapType() == MAP_RAID)
             {
                 ++itr;
                 continue;
@@ -1409,7 +1409,7 @@ void Group::ResetInstances(InstanceResetMethod method, Player* SendMsgTo)
 
 InstanceGroupBind* Group::GetBoundInstance(uint32 mapid)
 {
-    MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
+    auto mapEntry = sMapStore.LookupEntry(mapid);
     if (!mapEntry)
         return nullptr;
 

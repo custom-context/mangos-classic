@@ -577,11 +577,11 @@ struct PoolMapChecker
 
     bool CheckAndRemember(uint32 mapid, uint32 pool_id, char const* tableName, char const* elementName)
     {
-        MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
+        auto mapEntry = sMapStore.LookupEntry(mapid);
         if (!mapEntry)
             return false;
 
-        MapEntry const* poolMapEntry = m_poolTemplates[pool_id].mapEntry;
+        auto poolMapEntry = m_poolTemplates[pool_id].mapEntry;
 
         // if not listed then just remember
         if (!poolMapEntry)
@@ -596,7 +596,7 @@ struct PoolMapChecker
 
         // pool spawns must be at single map
         sLog.outErrorDb("`%s` has %s spawned at map %u when one or several other spawned at different instanceable map %u in pool id %i, skipped.",
-            tableName, elementName, mapid, poolMapEntry->MapID, pool_id);
+            tableName, elementName, mapid, poolMapEntry->GetMapID(), pool_id);
         return false;
     }
 };
@@ -992,9 +992,9 @@ void PoolManager::LoadFromDB()
             for (SearchMap::iterator poolItr = mPoolSearchMap.find(i); poolItr != mPoolSearchMap.end(); poolItr = mPoolSearchMap.find(poolItr->second))
             {
                 // if child pool not have map data then it empty or have not checked child then will checked and all line later
-                if (MapEntry const* childMapEntry = mPoolTemplate[poolItr->first].mapEntry)
+                if (entry::view::MapView childMapEntry = mPoolTemplate[poolItr->first].mapEntry)
                 {
-                    if (!mapChecker.CheckAndRemember(childMapEntry->MapID, poolItr->second, "pool_pool", "pool with creature/gameobject"))
+                    if (!mapChecker.CheckAndRemember(childMapEntry->GetMapID(), poolItr->second, "pool_pool", "pool with creature/gameobject"))
                     {
                         mPoolPoolGroups[poolItr->second].RemoveOneRelation(poolItr->first);
                         mPoolSearchMap.erase(poolItr);
@@ -1037,7 +1037,7 @@ void PoolManager::LoadFromDB()
                 poolTemplate.AutoSpawn = false;
             }
         }
-        if (poolTemplate.mapEntry != nullptr || poolTemplate.MaxLimit > 0 || poolTemplate.description != "")
+        if (!!poolTemplate.mapEntry || poolTemplate.MaxLimit > 0 || poolTemplate.description != "")
             if (pool_entry <= max_pool_id)
                 if (mPoolGameobjectGroups[pool_entry].isEmpty() && mPoolCreatureGroups[pool_entry].isEmpty() && mPoolPoolGroups[pool_entry].isEmpty())
                     sLog.outErrorDb("Pool Template Id (%u) is empty.", pool_entry);
@@ -1175,7 +1175,7 @@ void PoolManager::SpawnPoolInMaps(uint16 pool_id, bool instantly)
         return;
 
     SpawnPoolInMapsWorker worker(*this, pool_id, instantly);
-    sMapPersistentStateMgr.DoForAllStatesWithMapId(poolTemplate.mapEntry->MapID, worker);
+    sMapPersistentStateMgr.DoForAllStatesWithMapId(poolTemplate.mapEntry->GetMapID(), worker);
 }
 
 struct DespawnPoolInMapsWorker
@@ -1202,7 +1202,7 @@ void PoolManager::DespawnPoolInMaps(uint16 pool_id)
         return;
 
     DespawnPoolInMapsWorker worker(*this, pool_id);
-    sMapPersistentStateMgr.DoForAllStatesWithMapId(poolTemplate.mapEntry->MapID, worker);
+    sMapPersistentStateMgr.DoForAllStatesWithMapId(poolTemplate.mapEntry->GetMapID(), worker);
 }
 
 void PoolManager::InitSpawnPool(MapPersistentState& mapState, uint16 pool_id)
@@ -1238,7 +1238,7 @@ void PoolManager::UpdatePoolInMaps(uint16 pool_id, uint32 db_guid_or_pool_id)
         return;
 
     UpdatePoolInMapsWorker<T> worker(*this, pool_id, db_guid_or_pool_id);
-    sMapPersistentStateMgr.DoForAllStatesWithMapId(poolTemplate.mapEntry->MapID, worker);
+    sMapPersistentStateMgr.DoForAllStatesWithMapId(poolTemplate.mapEntry->GetMapID(), worker);
 }
 
 template void PoolManager::UpdatePoolInMaps<Pool>(uint16 pool_id, uint32 db_guid_or_pool_id);

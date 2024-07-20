@@ -1003,7 +1003,7 @@ bool Movement::CheckTeleport(uint16 opcode, MovementInfo& movementInfo)
             auto const destZoneEntry = GetAreaEntryByAreaID(destZoneId);
             auto const destAreaEntry = GetAreaEntryByAreaID(destAreaId);
 
-            const char *mapName = mapEntry ? mapEntry->name[0u] : "<unknown>";
+            const char *mapName = mapEntry ? mapEntry->GetName(0u) : "<unknown>";
             const char *srcZoneName = srcZoneEntry ? srcZoneEntry->GetDefaultAreaName() : "<unknown>";
             const char *srcAreaName = srcAreaEntry ? srcAreaEntry->GetDefaultAreaName() : "<unknown>";
             const char *destZoneName = destZoneEntry ? destZoneEntry->GetDefaultAreaName() : "<unknown>";

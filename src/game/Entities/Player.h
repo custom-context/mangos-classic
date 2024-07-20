@@ -1657,7 +1657,7 @@ class Player : public Unit
         void ResurrectPlayer(float restore_percent, bool applySickness = false);
         void BuildPlayerRepop();
         void RepopAtGraveyard();
-        std::pair<bool, AreaTrigger const*> CheckAndRevivePlayerOnDungeonEnter(MapEntry const* targetMapEntry, uint32 targetMapId);
+        std::pair<bool, AreaTrigger const*> CheckAndRevivePlayerOnDungeonEnter(entry::view::MapView targetMapEntry, uint32 targetMapId);
 
         void DurabilityLossAll(double percent, bool inventory);
         void DurabilityLoss(Item* item, double percent);
@@ -2129,7 +2129,7 @@ class Player : public Unit
         DungeonPersistentState* GetBoundInstanceSaveForSelfOrGroup(uint32 mapid);
 
         AreaLockStatus GetAreaTriggerLockStatus(AreaTrigger const* at, uint32& miscRequirement, bool forceAllChecks = false);
-        void SendTransferAbortedByLockStatus(MapEntry const* mapEntry, AreaTrigger const* at, AreaLockStatus lockStatus, uint32 miscRequirement = 0) const;
+        void SendTransferAbortedByLockStatus(entry::view::MapView mapEntry, AreaTrigger const* at, AreaLockStatus lockStatus, uint32 miscRequirement = 0) const;
 
         /*********************************************************/
         /***                   GROUP SYSTEM                    ***/

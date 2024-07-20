@@ -732,7 +732,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
     if (!at)
         return;
 
-    MapEntry const* targetMapEntry = sMapStore.LookupEntry(at->target_mapId);
+    auto targetMapEntry = sMapStore.LookupEntry(at->target_mapId);
     if (!targetMapEntry)
         return;
 

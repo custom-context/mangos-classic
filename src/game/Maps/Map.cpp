@@ -1299,7 +1299,7 @@ void Map::UnloadAll(bool pForce)
 
 const char* Map::GetMapName() const
 {
-    return i_mapEntry ? i_mapEntry->name[sWorld.GetDefaultDbcLocale()] : "UNNAMEDMAP\x0";
+    return i_mapEntry ? i_mapEntry->GetName(sWorld.GetDefaultDbcLocale()) : "UNNAMEDMAP\x0";
 }
 
 void Map::UpdateObjectVisibility(WorldObject* obj, Cell cell, const CellPair& cellpair)

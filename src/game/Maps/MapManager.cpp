@@ -114,7 +114,7 @@ Map* MapManager::CreateMap(uint32 id, const WorldObject* obj)
 
     Map* m = nullptr;
 
-    const MapEntry* entry = sMapStore.LookupEntry(id);
+    auto entry = sMapStore.LookupEntry(id);
     if (!entry)
         return nullptr;
 
@@ -243,7 +243,7 @@ bool MapManager::ExistMapAndVMap(uint32 mapid, float x, float y)
 
 bool MapManager::IsValidMAP(uint32 mapid)
 {
-    MapEntry const* mEntry = sMapStore.LookupEntry(mapid);
+    auto mEntry = sMapStore.LookupEntry(mapid);
     return mEntry && (!mEntry->IsDungeon() || ObjectMgr::GetInstanceTemplate(mapid));
     // TODO: add check for battleground template
 }
@@ -310,7 +310,7 @@ Map* MapManager::CreateInstance(uint32 id, Player* player)
     Map* map = nullptr;
     Map* pNewMap = nullptr;
     uint32 NewInstanceId = 0;                               // instanceId of the resulting map
-    const MapEntry* entry = sMapStore.LookupEntry(id);
+    auto entry = sMapStore.LookupEntry(id);
 
     if (entry->IsBattleGround())
     {
@@ -351,7 +351,7 @@ Map* MapManager::CreateInstance(uint32 id, Player* player)
 DungeonMap* MapManager::CreateDungeonMap(uint32 id, uint32 InstanceId, DungeonPersistentState* save)
 {
     // make sure we have a valid map id
-    const MapEntry* entry = sMapStore.LookupEntry(id);
+    auto entry = sMapStore.LookupEntry(id);
     if (!entry)
     {
         sLog.outError("CreateDungeonMap: no entry for map %d", id);

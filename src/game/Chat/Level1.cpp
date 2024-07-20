@@ -301,7 +301,7 @@ bool ChatHandler::HandleGPSCommand(char* args)
     uint32 zone_id, area_id;
     obj->GetZoneAndAreaId(zone_id, area_id);
 
-    MapEntry const* mapEntry = sMapStore.LookupEntry(obj->GetMapId());
+    auto mapEntry = sMapStore.LookupEntry(obj->GetMapId());
     auto zoneEntry = GetAreaEntryByAreaID(zone_id);
     auto areaEntry = GetAreaEntryByAreaID(area_id);
 
@@ -343,7 +343,7 @@ bool ChatHandler::HandleGPSCommand(char* args)
         wmoAreaOverride = "WMOArea Override: (" + std::string(nameInfo.wmoNameOverride) + ")";
 
     PSendSysMessage(LANG_MAP_POSITION,
-                    obj->GetMapId(), (mapEntry ? mapEntry->name[GetSessionDbcLocale()] : "<unknown>"),
+                    obj->GetMapId(), (mapEntry ? mapEntry->GetName(GetSessionDbcLocale()) : "<unknown>"),
                     zone_id, (zoneEntry ? zoneEntry->GetAreaName(GetSessionDbcLocale()) : "<unknown>"),
                     area_id, nameInfo.areaName, wmoAreaOverride.c_str(),
                     obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(),
@@ -366,7 +366,7 @@ bool ChatHandler::HandleGPSCommand(char* args)
     if (nameInfo.wmoNameOverride)
         wmoAreaOverride = "WMOArea Override: " + std::string(nameInfo.wmoNameOverride);
     DEBUG_LOG(GetMangosString(LANG_MAP_POSITION),
-              obj->GetMapId(), (mapEntry ? mapEntry->name[sWorld.GetDefaultDbcLocale()] : "<unknown>"),
+              obj->GetMapId(), (mapEntry ? mapEntry->GetName(sWorld.GetDefaultDbcLocale()) : "<unknown>"),
               zone_id, (zoneEntry ? zoneEntry->GetAreaName(sWorld.GetDefaultDbcLocale()) : "<unknown>"),
               area_id, nameInfo.areaName, wmoAreaOverride.c_str(),
               obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(),
@@ -1793,7 +1793,7 @@ bool ChatHandler::HandleGoXYZCommand(char* args)
     if (pmapid)
     {
         mapid = (uint32)atoi(pmapid);
-        MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
+        auto mapEntry = sMapStore.LookupEntry(mapid);
         if (!mapEntry || mapEntry->IsBattleGround())
         {
             PSendSysMessage("Map %u is battleground or arena. Not allowed through XYZ command.", mapid);
@@ -1847,12 +1847,12 @@ bool ChatHandler::HandleGoZoneXYCommand(char* args)
     // update to parent zone if exist (client map show only zones without parents)
     auto zoneEntry = areaEntry->GetZone() ? GetAreaEntryByAreaID(areaEntry->GetZone()) : areaEntry;
 
-    MapEntry const* mapEntry = sMapStore.LookupEntry(zoneEntry->GetMapID());
+    auto mapEntry = sMapStore.LookupEntry(zoneEntry->GetMapID());
 
     if (mapEntry->Instanceable())
     {
         PSendSysMessage(LANG_INVALID_ZONE_MAP, areaEntry->GetMapID(), areaEntry->GetAreaName(GetSessionDbcLocale()),
-                        mapEntry->MapID, mapEntry->name[GetSessionDbcLocale()]);
+                        mapEntry->GetMapID(), mapEntry->GetName(GetSessionDbcLocale()));
         SetSentErrorMessage(true);
         return false;
     }
@@ -1860,12 +1860,12 @@ bool ChatHandler::HandleGoZoneXYCommand(char* args)
     if (!Zone2MapCoordinates(x, y, zoneEntry->GetID()))
     {
         PSendSysMessage(LANG_INVALID_ZONE_MAP, areaEntry->GetID(), areaEntry->GetAreaName(GetSessionDbcLocale()),
-                        mapEntry->MapID, mapEntry->name[GetSessionDbcLocale()]);
+                        mapEntry->GetMapID(), mapEntry->GetName(GetSessionDbcLocale()));
         SetSentErrorMessage(true);
         return false;
     }
 
-    return HandleGoHelper(_player, mapEntry->MapID, x, y);
+    return HandleGoHelper(_player, mapEntry->GetMapID(), x, y);
 }
 
 // teleport to grid

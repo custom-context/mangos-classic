@@ -1809,7 +1809,7 @@ void Spell::EffectTeleportUnits(SpellEffectIndex eff_idx)
     else if (unitTarget->GetTypeId() == TYPEID_PLAYER)
     {
         Player* player = static_cast<Player*>(unitTarget);
-        MapEntry const* targetMapEntry = sMapStore.LookupEntry(m_targets.m_mapId);
+        auto targetMapEntry = sMapStore.LookupEntry(m_targets.m_mapId);
         if (!targetMapEntry)
             return;
         if (!player->IsAlive() && targetMapEntry->IsDungeon())

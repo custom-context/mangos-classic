@@ -70,7 +70,7 @@ class MapPersistentState
         uint32 GetInstanceId() const { return m_instanceid; }
         uint32 GetMapId() const { return m_mapid; }
 
-        MapEntry const* GetMapEntry() const;
+        entry::view::MapView GetMapEntry() const;
 
         bool IsUsedByMap() const { return m_usedByMap != nullptr; }
         Map* GetMap() const { return m_usedByMap; }         // Can be nullptr if map not loaded for persistent state
@@ -329,7 +329,7 @@ class MapPersistentStateManager : public MaNGOS::Singleton<MapPersistentStateMan
 
         // auto select appropriate MapPersistentState (sub)class by MapEntry, and autoselect appropriate way store (by instance/map id)
         // always return != nullptr
-        MapPersistentState* AddPersistentState(MapEntry const* mapEntry, uint32 instanceId, time_t resetTime, bool canReset, bool load = false, uint32 completedEncountersMask = 0);
+        MapPersistentState* AddPersistentState(entry::view::MapView mapEntry, uint32 instanceId, time_t resetTime, bool canReset, bool load = false, uint32 completedEncountersMask = 0);
 
         // search stored state, can be nullptr in result
         MapPersistentState* GetPersistentState(uint32 mapId, uint32 instanceId);
@@ -374,7 +374,7 @@ class MapPersistentStateManager : public MaNGOS::Singleton<MapPersistentStateMan
 template<typename Do>
 inline void MapPersistentStateManager::DoForAllStatesWithMapId(uint32 mapId, Do& _do)
 {
-    MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+    auto mapEntry = sMapStore.LookupEntry(mapId);
     if (!mapEntry)
         return;
 

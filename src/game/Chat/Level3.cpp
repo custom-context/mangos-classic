@@ -6026,10 +6026,10 @@ bool ChatHandler::HandleInstanceListBindsCommand(char* /*args*/)
     {
         DungeonPersistentState* state = itr->second.state;
         std::string timeleft = secsToTimeString(state->GetResetTime() - time(nullptr), true);
-        if (const MapEntry* entry = sMapStore.LookupEntry(itr->first))
+        if (auto entry = sMapStore.LookupEntry(itr->first))
         {
             PSendSysMessage("map: %d (%s) inst: %d perm: %s canReset: %s TTR: %s",
-                            itr->first, entry->name[GetSessionDbcLocale()], state->GetInstanceId(), itr->second.perm ? "yes" : "no",
+                            itr->first, entry->GetName(GetSessionDbcLocale()), state->GetInstanceId(), itr->second.perm ? "yes" : "no",
                             state->CanReset() ? "yes" : "no", timeleft.c_str());
         }
         else
@@ -6048,10 +6048,10 @@ bool ChatHandler::HandleInstanceListBindsCommand(char* /*args*/)
             DungeonPersistentState* state = itr->second.state;
             std::string timeleft = secsToTimeString(state->GetResetTime() - time(nullptr), true);
 
-            if (const MapEntry* entry = sMapStore.LookupEntry(itr->first))
+            if (auto entry = sMapStore.LookupEntry(itr->first))
             {
                 PSendSysMessage("map: %d (%s) inst: %d perm: %s canReset: %s TTR: %s",
-                                itr->first, entry->name[GetSessionDbcLocale()], state->GetInstanceId(), itr->second.perm ? "yes" : "no",
+                                itr->first, entry->GetName(GetSessionDbcLocale()), state->GetInstanceId(), itr->second.perm ? "yes" : "no",
                                 state->CanReset() ? "yes" : "no", timeleft.c_str());
             }
             else
@@ -6098,10 +6098,10 @@ bool ChatHandler::HandleInstanceUnbindCommand(char* args)
             DungeonPersistentState* save = itr->second.state;
             std::string timeleft = secsToTimeString(save->GetResetTime() - time(nullptr), true);
 
-            if (const MapEntry* entry = sMapStore.LookupEntry(itr->first))
+            if (auto entry = sMapStore.LookupEntry(itr->first))
             {
                 PSendSysMessage("unbinding map: %d (%s) inst: %d perm: %s canReset: %s TTR: %s",
-                                itr->first, entry->name[GetSessionDbcLocale()], save->GetInstanceId(), itr->second.perm ? "yes" : "no",
+                                itr->first, entry->GetName(GetSessionDbcLocale()), save->GetInstanceId(), itr->second.perm ? "yes" : "no",
                                 save->CanReset() ? "yes" : "no", timeleft.c_str());
             }
             else

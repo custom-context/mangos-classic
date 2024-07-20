@@ -39,6 +39,7 @@
 #include "Maps/SpawnManager.h"
 #include "Maps/MapDataContainer.h"
 #include "World/WorldStateVariableManager.h"
+#include "Server/EntryView.h"
 
 #include <bitset>
 #include <functional>
@@ -416,7 +417,7 @@ class Map : public GridRefManager<NGridType>
         std::set<Object*> i_objectsToClientUpdate;
 
     protected:
-        MapEntry const* i_mapEntry;
+        entry::view::MapView i_mapEntry;
         uint32 i_id;
         uint32 i_InstanceId;
         uint32 m_unloadTimer;

@@ -2668,7 +2668,7 @@ void World::LoadGraveyardZones()
             continue;
         }
 
-        if (linkKind == GRAVEYARD_MAPLINK && sMapStore.LookupEntry(locId) == nullptr)
+        if (linkKind == GRAVEYARD_MAPLINK && !sMapStore.LookupEntry(locId))
         {
             sLog.outErrorDb("Table `game_graveyard_zone` has record for nonexistent map id (%u), skipped.", locId);
             continue;

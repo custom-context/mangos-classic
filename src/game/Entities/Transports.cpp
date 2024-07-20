@@ -82,14 +82,14 @@ void MapManager::LoadTransports()
             continue;
         }
 
-        const MapEntry* pMapInfo = sMapStore.LookupEntry(transportTemplate->keyFrames.begin()->Node->mapid);
+        auto pMapInfo = sMapStore.LookupEntry(transportTemplate->keyFrames.begin()->Node->mapid);
         if (!pMapInfo)
             continue;
 
         transportTemplate->pathTime = period;
         transportTemplate->keyFrames.back().DepartureTime = period;
 
-        m_transportsByMap[pMapInfo->MapID].push_back(transportTemplate);
+        m_transportsByMap[pMapInfo->GetMapID()].push_back(transportTemplate);
 
         ++count;
     }

@@ -47,7 +47,7 @@ WorldSafeLocsEntry const* GraveyardManager::GetClosestGraveyardHelper(GraveYardM
     // some where other
     WorldSafeLocsEntry const* entryFar = nullptr;
 
-    MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+    auto mapEntry = sMapStore.LookupEntry(mapId);
 
     InstanceTemplate const* tempEntry = sObjectMgr.GetInstanceTemplate(mapId);
 

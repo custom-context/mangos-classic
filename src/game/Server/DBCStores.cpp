@@ -112,7 +112,7 @@ DBCStorage <LiquidTypeEntry> sLiquidTypeStore(LiquidTypefmt);
 DBCStorage <LockEntry> sLockStore(LockEntryfmt);
 
 DBCStorage <MailTemplateEntry> sMailTemplateStore(MailTemplateEntryfmt);
-DBCStorage <MapEntry> sMapStore(MapEntryfmt);
+DBCStorage <MapEntry, entry::view::MapView> sMapStore(MapEntryfmt);
 
 DBCStorage <QuestSortEntry> sQuestSortStore(QuestSortEntryfmt);
 
@@ -698,8 +698,8 @@ decltype(sAreaStore)::EntryView GetAreaEntryByAreaFlagAndMap(uint32 area_flag, u
     if (aEntry)
         return aEntry; // return last entry found if exist (not same map_id but it seem ok in some places)
 
-    if (MapEntry const* mapEntry = sMapStore.LookupEntry(map_id))
-        return GetAreaEntryByAreaID(mapEntry->linked_zone);
+    if (auto mapEntry = sMapStore.LookupEntry(map_id))
+        return GetAreaEntryByAreaID(mapEntry->GetLinkedZoneID());
 
     return decltype(sAreaStore)::EntryView{};
 }

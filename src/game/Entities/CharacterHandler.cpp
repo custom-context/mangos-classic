@@ -815,7 +815,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     else
     {
         // Some basic checks in case of a map without areatrigger
-        MapEntry const* mapEntry = sMapStore.LookupEntry(pCurrChar->GetMapId());
+        auto mapEntry = sMapStore.LookupEntry(pCurrChar->GetMapId());
         if (!mapEntry)
             lockStatus = AREA_LOCKSTATUS_UNKNOWN_ERROR;
     }

@@ -536,9 +536,9 @@ void LFGQueue::LoadMeetingStones()
                 default:
                     info.dungeonType = MAP_INSTANCE;
                 }
-                /*if (MapEntry const* mEntry = sMapStore.LookupEntry(area->GetMapID()))
+                /*if (auto mEntry = sMapStore.LookupEntry(area->GetMapID()))
                 {
-                    info.dungeonType = mEntry->map_type;
+                    info.dungeonType = mEntry->GetMapType();
                 }
                 else
                     info.dungeonType = MAP_COMMON;*/

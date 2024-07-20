@@ -1911,7 +1911,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         return false;
     }
 
-    MapEntry const* mEntry = sMapStore.LookupEntry(mapid);  // Validity checked in IsValidMapCoord
+    auto mEntry = sMapStore.LookupEntry(mapid);  // Validity checked in IsValidMapCoord
 
     // do not let charmed players/creatures teleport
     if (HasCharmer())
@@ -4360,7 +4360,7 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     }
 }
 
-std::pair<bool, AreaTrigger const*> Player::CheckAndRevivePlayerOnDungeonEnter(MapEntry const* targetMapEntry, uint32 targetMapId)
+std::pair<bool, AreaTrigger const*> Player::CheckAndRevivePlayerOnDungeonEnter(entry::view::MapView targetMapEntry, uint32 targetMapId)
 {
     AreaTrigger const* resultingAt = nullptr;
 
@@ -4373,7 +4373,7 @@ std::pair<bool, AreaTrigger const*> Player::CheckAndRevivePlayerOnDungeonEnter(M
     do
     {
         // most often fast case
-        if (instance_map == targetMapEntry->MapID)
+        if (instance_map == targetMapEntry->GetMapID())
             break;
 
         InstanceTemplate const* instance = ObjectMgr::GetInstanceTemplate(instance_map);
@@ -4384,7 +4384,7 @@ std::pair<bool, AreaTrigger const*> Player::CheckAndRevivePlayerOnDungeonEnter(M
     if (!instance_map)
     {
         GetSession()->SendAreaTriggerMessage("You cannot enter %s while in a ghost mode",
-            targetMapEntry->name[GetSession()->GetSessionDbcLocale()]);
+            targetMapEntry->GetName(GetSession()->GetSessionDbcLocale()));
         return { false, nullptr };
     }
 
@@ -14160,7 +14160,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
     }
     else
     {
-        MapEntry const* mapEntry = sMapStore.LookupEntry(GetMapId());
+        auto mapEntry = sMapStore.LookupEntry(GetMapId());
         // if server restart after player save in BG or area
         // player can have current coordinates in to BG map, fix this
         if (!mapEntry || mapEntry->IsBattleGround())
@@ -15223,7 +15223,7 @@ void Player::_LoadBoundInstances(std::unique_ptr<QueryResult> queryResult)
             // so the value read from the DB may be wrong here but only if the InstanceSave is loaded
             // and in that case it is not used
 
-            MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+            auto mapEntry = sMapStore.LookupEntry(mapId);
             if (!mapEntry || !mapEntry->IsDungeon())
             {
                 sLog.outError("_LoadBoundInstances: player %s(%d) has bind to nonexistent or not dungeon map %d", GetName(), GetGUIDLow(), mapId);
@@ -15250,7 +15250,7 @@ void Player::_LoadBoundInstances(std::unique_ptr<QueryResult> queryResult)
 
 InstancePlayerBind* Player::GetBoundInstance(uint32 mapid)
 {
-    const MapEntry* entry = sMapStore.LookupEntry(mapid);
+    auto entry = sMapStore.LookupEntry(mapid);
 
     BoundInstancesMap::iterator itr = m_boundInstances.find(mapid);
     if (itr != m_boundInstances.end())
@@ -15318,7 +15318,7 @@ InstancePlayerBind* Player::BindToInstance(DungeonPersistentState* state, bool p
 
 DungeonPersistentState* Player::GetBoundInstanceSaveForSelfOrGroup(uint32 mapid)
 {
-    MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
+    auto mapEntry = sMapStore.LookupEntry(mapid);
     if (!mapEntry)
         return nullptr;
 
@@ -15471,7 +15471,7 @@ bool Player::_LoadHomeBind(std::unique_ptr<QueryResult> queryResult)
         m_homebindY = fields[3].GetFloat();
         m_homebindZ = fields[4].GetFloat();
 
-        MapEntry const* bindMapEntry = sMapStore.LookupEntry(m_homebindMapId);
+        auto bindMapEntry = sMapStore.LookupEntry(m_homebindMapId);
 
         // accept saved data only for valid position (and non instanceable), and accessable
         if (MapManager::IsValidMapCoord(m_homebindMapId, m_homebindX, m_homebindY, m_homebindZ) &&
@@ -16376,7 +16376,7 @@ void Player::ResetInstances(InstanceResetMethod method)
     for (BoundInstancesMap::iterator itr = m_boundInstances.begin(); itr != m_boundInstances.end();)
     {
         DungeonPersistentState* state = itr->second.state;
-        const MapEntry* entry = sMapStore.LookupEntry(itr->first);
+        auto entry = sMapStore.LookupEntry(itr->first);
         if (!entry || !state->CanReset())
         {
             ++itr;
@@ -16386,7 +16386,7 @@ void Player::ResetInstances(InstanceResetMethod method)
         if (method == INSTANCE_RESET_ALL)
         {
             // the "reset all instances" method can only reset normal maps
-            if (entry->map_type == MAP_RAID)
+            if (entry->GetMapType() == MAP_RAID)
             {
                 ++itr;
                 continue;
@@ -18046,11 +18046,11 @@ void Player::SendUpdateToOutOfRangeGroupMembers()
         charm->ResetAuraUpdateMask();
 }
 
-void Player::SendTransferAbortedByLockStatus(MapEntry const* mapEntry, AreaTrigger const* at, AreaLockStatus lockStatus, uint32 miscRequirement) const
+void Player::SendTransferAbortedByLockStatus(entry::view::MapView mapEntry, AreaTrigger const* at, AreaLockStatus lockStatus, uint32 miscRequirement) const
 {
     MANGOS_ASSERT(mapEntry);
 
-    DEBUG_LOG("SendTransferAbortedByLockStatus: Called for %s on map %u, LockAreaStatus %u, miscRequirement %u)", GetGuidStr().c_str(), mapEntry->MapID, lockStatus, miscRequirement);
+    DEBUG_LOG("SendTransferAbortedByLockStatus: Called for %s on map %u, LockAreaStatus %u, miscRequirement %u)", GetGuidStr().c_str(), mapEntry->GetMapID(), lockStatus, miscRequirement);
 
     if (!at->status_failed_text.empty())
     {
@@ -18085,13 +18085,13 @@ void Player::SendTransferAbortedByLockStatus(MapEntry const* mapEntry, AreaTrigg
         case AREA_LOCKSTATUS_QUEST_NOT_COMPLETED:
             if (mapEntry->IsContinent())               // do not report anything for quest areatrigge
             {
-                DEBUG_LOG("SendTransferAbortedByLockStatus: LockAreaStatus %u, do not teleport, no message sent (mapId %u)", lockStatus, mapEntry->MapID);
+                DEBUG_LOG("SendTransferAbortedByLockStatus: LockAreaStatus %u, do not teleport, no message sent (mapId %u)", lockStatus, mapEntry->GetMapID());
                 break;
             }
             // ToDo: SendAreaTriggerMessage or Transfer Abort for these cases!
             break;
         case AREA_LOCKSTATUS_MISSING_ITEM:
-            if (AreaTrigger const* at = sObjectMgr.GetMapEntranceTrigger(mapEntry->MapID))
+            if (AreaTrigger const* at = sObjectMgr.GetMapEntranceTrigger(mapEntry->GetMapID()))
                 GetSession()->SendAreaTriggerMessage(GetSession()->GetMangosString(LANG_LEVEL_MINREQUIRED_AND_ITEM), at->requiredLevel, sObjectMgr.GetItemPrototype(miscRequirement)->Name1);
             break;
         case AREA_LOCKSTATUS_TOO_MANY_INSTANCE:
@@ -18103,11 +18103,11 @@ void Player::SendTransferAbortedByLockStatus(MapEntry const* mapEntry, AreaTrigg
             // ToDo: SendAreaTriggerMessage or Transfer Abort for these cases!
             break;
         case AREA_LOCKSTATUS_OK:
-            sLog.outError("SendTransferAbortedByLockStatus: LockAreaStatus AREA_LOCKSTATUS_OK received for %s (mapId %u)", GetGuidStr().c_str(), mapEntry->MapID);
+            sLog.outError("SendTransferAbortedByLockStatus: LockAreaStatus AREA_LOCKSTATUS_OK received for %s (mapId %u)", GetGuidStr().c_str(), mapEntry->GetMapID());
             MANGOS_ASSERT(false);
             break;
         default:
-            sLog.outError("SendTransfertAbortedByLockstatus: unhandled LockAreaStatus %u, when %s attempts to enter in map %u", lockStatus, GetGuidStr().c_str(), mapEntry->MapID);
+            sLog.outError("SendTransfertAbortedByLockstatus: unhandled LockAreaStatus %u, when %s attempts to enter in map %u", lockStatus, GetGuidStr().c_str(), mapEntry->GetMapID());
             break;
     }
 }
@@ -19914,7 +19914,7 @@ AreaLockStatus Player::GetAreaTriggerLockStatus(AreaTrigger const* at, uint32& m
     if (!at)
         return AREA_LOCKSTATUS_UNKNOWN_ERROR;
 
-    MapEntry const* mapEntry = sMapStore.LookupEntry(at->target_mapId);
+    auto mapEntry = sMapStore.LookupEntry(at->target_mapId);
     if (!mapEntry)
         return AREA_LOCKSTATUS_UNKNOWN_ERROR;
 

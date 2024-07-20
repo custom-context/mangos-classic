@@ -1844,7 +1844,7 @@ void ObjectMgr::LoadCreatures()
         if (m_maxCreatureDbGuid < guid)
             m_maxCreatureDbGuid = guid;
 
-        MapEntry const* mapEntry = sMapStore.LookupEntry(data.mapid);
+        auto mapEntry = sMapStore.LookupEntry(data.mapid);
         if (!mapEntry)
         {
             sLog.outErrorDb("Table `creature` have creature (GUID: %u) that spawned at nonexistent map (Id: %u), skipped.", guid, data.mapid);
@@ -2036,7 +2036,7 @@ void ObjectMgr::LoadGameObjects()
         if (m_maxGoDbGuid < guid)
             m_maxGoDbGuid = guid;
 
-        MapEntry const* mapEntry = sMapStore.LookupEntry(data.mapid);
+        auto mapEntry = sMapStore.LookupEntry(data.mapid);
         if (!mapEntry)
         {
             sLog.outErrorDb("Table `gameobject` have gameobject (GUID: %u Entry: %u) that spawned at nonexistent map (Id: %u), skip", guid, data.id, data.mapid);
@@ -4077,7 +4077,7 @@ void ObjectMgr::LoadGroups()
                 }
             }
 
-            MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+            auto mapEntry = sMapStore.LookupEntry(mapId);
             if (!mapEntry || !mapEntry->IsDungeon())
             {
                 sLog.outErrorDb("Incorrect entry in group_instance table : no dungeon map %d", mapId);
@@ -5246,7 +5246,7 @@ void ObjectMgr::LoadInstanceTemplate()
         if (!temp)
             continue;
 
-        MapEntry const* mapEntry = sMapStore.LookupEntry(temp->map);
+        auto mapEntry = sMapStore.LookupEntry(temp->map);
         if (!mapEntry)
         {
             sLog.outErrorDb("ObjectMgr::LoadInstanceTemplate: bad mapid %d for template!", temp->map);
@@ -5265,7 +5265,7 @@ void ObjectMgr::LoadInstanceTemplate()
         if (temp->parent > 0)
         {
             // check existence
-            MapEntry const* parentEntry = sMapStore.LookupEntry(temp->parent);
+            auto parentEntry = sMapStore.LookupEntry(temp->parent);
             if (!parentEntry)
             {
                 sLog.outErrorDb("ObjectMgr::LoadInstanceTemplate: bad parent map id %u for instance template %d template!",
@@ -5277,7 +5277,7 @@ void ObjectMgr::LoadInstanceTemplate()
             if (parentEntry->IsContinent())
             {
                 sLog.outErrorDb("ObjectMgr::LoadInstanceTemplate: parent point to continent map id %u for instance template %d template, ignored, need be set only for non-continent parents!",
-                                parentEntry->MapID, temp->map);
+                                parentEntry->GetMapID(), temp->map);
                 const_cast<InstanceTemplate*>(temp)->parent = 0;
             }
         }
@@ -5292,7 +5292,7 @@ void ObjectMgr::LoadInstanceTemplate()
                 continue;
             }
 
-            MapEntry const* ghostEntry = sMapStore.LookupEntry(temp->ghost_entrance_map);
+            auto ghostEntry = sMapStore.LookupEntry(temp->ghost_entrance_map);
             if (!ghostEntry)
             {
                 sLog.outErrorDb("ObjectMgr::LoadInstanceTemplate: bad ghost entrance map id %u for instance template %d template!", temp->ghost_entrance_map, temp->map);
@@ -5302,7 +5302,7 @@ void ObjectMgr::LoadInstanceTemplate()
 
             if (!ghostEntry->IsContinent())
             {
-                sLog.outErrorDb("ObjectMgr::LoadInstanceTemplate: ghost entrance not at continent map id %u for instance template %d template, ignored, need be set only for non-continent parents!", ghostEntry->MapID, temp->map);
+                sLog.outErrorDb("ObjectMgr::LoadInstanceTemplate: ghost entrance not at continent map id %u for instance template %d template, ignored, need be set only for non-continent parents!", ghostEntry->GetMapID(), temp->map);
                 sInstanceTemplate.EraseEntry(i);
                 continue;
             }
@@ -5337,7 +5337,7 @@ void ObjectMgr::LoadWorldTemplate()
         if (!temp)
             continue;
 
-        MapEntry const* mapEntry = sMapStore.LookupEntry(temp->map);
+        auto mapEntry = sMapStore.LookupEntry(temp->map);
         if (!mapEntry)
         {
             sLog.outErrorDb("ObjectMgr::LoadWorldTemplate: bad mapid %d for template!", temp->map);
@@ -6426,7 +6426,7 @@ void ObjectMgr::LoadAreaTriggerTeleports()
                 sLog.outErrorDb("Table `areatrigger_teleport` entry %u has `ConditionId` = %u but does not exist.", at.entry, at.conditionId);
         }
 
-        MapEntry const* mapEntry = sMapStore.LookupEntry(at.target_mapId);
+        auto mapEntry = sMapStore.LookupEntry(at.target_mapId);
         if (!mapEntry)
         {
             sLog.outErrorDb("Table `areatrigger_teleport` has nonexistent target map (ID: %u) for Area trigger (ID:%u).", at.target_mapId, at.entry);
@@ -6498,7 +6498,7 @@ AreaTrigger const* ObjectMgr::GetGoBackTrigger(uint32 map_id) const
 AreaTrigger const* ObjectMgr::GetMapEntranceTrigger(uint32 Map) const
 {
     AreaTrigger const* compareTrigger = nullptr;
-    MapEntry const* mEntry = sMapStore.LookupEntry(Map);
+    auto mEntry = sMapStore.LookupEntry(Map);
 
     for (const auto& mAreaTrigger : mAreaTriggers)
     {

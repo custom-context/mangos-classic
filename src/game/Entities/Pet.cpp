@@ -613,8 +613,8 @@ void Pet::SetDeathState(DeathState s)                       // overwrite virtual
         if (getPetType() != SUMMON_PET)
         {
             // lose happiness when died and not in BG/Arena
-            MapEntry const* mapEntry = sMapStore.LookupEntry(GetMapId());
-            if (!mapEntry || (mapEntry->map_type != MAP_BATTLEGROUND))
+            auto mapEntry = sMapStore.LookupEntry(GetMapId());
+            if (!mapEntry || (mapEntry->GetMapType() != MAP_BATTLEGROUND))
                 ModifyPower(POWER_HAPPINESS, -HAPPINESS_LEVEL_SIZE);
         }
 

@@ -1271,8 +1271,8 @@ GridMap* TerrainInfo::LoadMapAndVMap(const uint32 x, const uint32 y, bool mapOnl
     if (!m_vmgr->IsTileLoaded(m_mapId, x, y))
     {
         // load VMAPs for current map/grid...
-        const MapEntry* i_mapEntry = sMapStore.LookupEntry(m_mapId);
-        const char* mapName = i_mapEntry ? i_mapEntry->name[sWorld.GetDefaultDbcLocale()] : "UNNAMEDMAP\x0";
+        auto i_mapEntry = sMapStore.LookupEntry(m_mapId);
+        const char* mapName = i_mapEntry ? i_mapEntry->GetName(sWorld.GetDefaultDbcLocale()) : "UNNAMEDMAP\x0";
 
         int vmapLoadResult = m_vmgr->loadMap((sWorld.GetDataPath() + "vmaps").c_str(), m_mapId, x, y);
         switch (vmapLoadResult)

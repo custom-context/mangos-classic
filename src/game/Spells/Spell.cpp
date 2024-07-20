@@ -5594,7 +5594,7 @@ SpellCastResult Spell::CheckCast(bool strict)
 
                 // check if our map is dungeon
                 uint32 mapId = m_caster->GetMapId();
-                const MapEntry* map = sMapStore.LookupEntry(mapId);
+                auto map = sMapStore.LookupEntry(mapId);
                 if (map->IsDungeon())
                 {
                     InstanceTemplate const* instance = ObjectMgr::GetInstanceTemplate(mapId);
