@@ -1405,16 +1405,16 @@ bool ChatHandler::HandleGUIDCommand(char* /*args*/)
     return true;
 }
 
-void ChatHandler::ShowFactionListHelper(FactionEntry const* factionEntry, LocaleConstant loc, FactionState const* repState /*= nullptr*/, Player* target /*= nullptr */)
+void ChatHandler::ShowFactionListHelper(entry::view::FactionView factionEntry, LocaleConstant loc, FactionState const* repState /*= nullptr*/, Player* target /*= nullptr */)
 {
-    std::string name = factionEntry->name[loc];
+    std::string name = factionEntry->GetName(loc);
     // send faction in "id - [faction] rank reputation [visible] [at war] [own team] [unknown] [invisible] [inactive]" format
     // or              "id - [faction] [no reputation]" format
     std::ostringstream ss;
     if (m_session)
-        ss << factionEntry->ID << " - |cffffffff|Hfaction:" << factionEntry->ID << "|h[" << name << " " << localeNames[loc] << "]|h|r";
+        ss << factionEntry->GetID() << " - |cffffffff|Hfaction:" << factionEntry->GetID() << "|h[" << name << " " << localeNames[loc] << "]|h|r";
     else
-        ss << factionEntry->ID << " - " << name << " " << localeNames[loc];
+        ss << factionEntry->GetID() << " - " << name << " " << localeNames[loc];
 
     if (repState)                               // and then target!=nullptr also
     {
@@ -1463,11 +1463,11 @@ bool ChatHandler::HandleLookupFactionCommand(char* args)
 
     for (uint32 id = 0; id < sFactionStore.GetNumRows(); ++id)
     {
-        FactionEntry const* factionEntry = sFactionStore.LookupEntry(id);
+        auto factionEntry = sFactionStore.LookupEntry(id);
         if (factionEntry)
         {
             int loc = GetSessionDbcLocale();
-            std::string name = factionEntry->name[loc];
+            std::string name = factionEntry->GetName(loc);
             if (name.empty())
                 continue;
 
@@ -1479,7 +1479,7 @@ bool ChatHandler::HandleLookupFactionCommand(char* args)
                     if (loc == GetSessionDbcLocale())
                         continue;
 
-                    name = factionEntry->name[loc];
+                    name = factionEntry->GetName(loc);
                     if (name.empty())
                         continue;
 
@@ -1576,7 +1576,7 @@ bool ChatHandler::HandleModifyRepCommand(char* args)
         }
     }
 
-    FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionId);
+    auto factionEntry = sFactionStore.LookupEntry(factionId);
 
     if (!factionEntry)
     {
@@ -1587,13 +1587,13 @@ bool ChatHandler::HandleModifyRepCommand(char* args)
 
     if (!factionEntry->HasReputation())
     {
-        PSendSysMessage(LANG_COMMAND_FACTION_NOREP_ERROR, factionEntry->name[GetSessionDbcLocale()], factionId);
+        PSendSysMessage(LANG_COMMAND_FACTION_NOREP_ERROR, factionEntry->GetName(GetSessionDbcLocale()), factionId);
         SetSentErrorMessage(true);
         return false;
     }
 
     target->GetReputationMgr().SetReputation(factionEntry, amount);
-    PSendSysMessage(LANG_COMMAND_MODIFY_REP, factionEntry->name[GetSessionDbcLocale()], factionId,
+    PSendSysMessage(LANG_COMMAND_MODIFY_REP, factionEntry->GetName(GetSessionDbcLocale()), factionId,
                     GetNameLink(target).c_str(), target->GetReputationMgr().GetReputation(factionEntry));
     return true;
 }
@@ -3656,7 +3656,7 @@ bool ChatHandler::HandleCharacterReputationCommand(char* args)
     FactionStateList const& targetFSL = target->GetReputationMgr().GetStateList();
     for (const auto& itr : targetFSL)
     {
-        FactionEntry const* factionEntry = sFactionStore.LookupEntry(itr.second.ID);
+        auto factionEntry = sFactionStore.LookupEntry(itr.second.ID);
 
         ShowFactionListHelper(factionEntry, loc, &itr.second, target);
     }

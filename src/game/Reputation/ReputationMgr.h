@@ -71,33 +71,33 @@ class ReputationMgr
     public:                                                 // accessors
         FactionStateList const& GetStateList() const { return m_factions; }
 
-        FactionState const* GetState(FactionEntry const* factionEntry) const;
+        FactionState const* GetState(entry::view::FactionView factionEntry) const;
         FactionState const* GetState(RepListID id) const;
 
         int32 GetReputation(uint32 faction_id) const;
-        int32 GetReputation(FactionEntry const* factionEntry) const;
-        int32 GetBaseReputation(FactionEntry const* factionEntry) const;
+        int32 GetReputation(entry::view::FactionView factionEntry) const;
+        int32 GetBaseReputation(entry::view::FactionView factionEntry) const;
 
         bool IsAtWar(uint32 faction_id) const;
-        bool IsAtWar(FactionEntry const* factionEntry) const;
+        bool IsAtWar(entry::view::FactionView factionEntry) const;
 
-        ReputationRank GetRank(FactionEntry const* factionEntry) const;
-        ReputationRank GetBaseRank(FactionEntry const* factionEntry) const;
+        ReputationRank GetRank(entry::view::FactionView factionEntry) const;
+        ReputationRank GetBaseRank(entry::view::FactionView factionEntry) const;
 
         ReputationRank const* GetForcedRankIfAny(FactionTemplateEntry const* factionTemplateEntry) const;
 
     public:                                                 // modifiers
-        bool SetReputation(FactionEntry const* factionEntry, int32 standing)
+        bool SetReputation(entry::view::FactionView factionEntry, int32 standing)
         {
             return SetReputation(factionEntry, standing, false);
         }
-        bool ModifyReputation(FactionEntry const* factionEntry, int32 standing)
+        bool ModifyReputation(entry::view::FactionView factionEntry, int32 standing)
         {
             return SetReputation(factionEntry, standing, true);
         }
 
         void SetVisible(FactionTemplateEntry const* factionTemplateEntry);
-        void SetVisible(FactionEntry const* factionEntry);
+        void SetVisible(entry::view::FactionView factionEntry);
         void SetAtWar(RepListID repListID, bool on);
         void SetInactive(RepListID repListID, bool on);
 
@@ -110,9 +110,9 @@ class ReputationMgr
 
     private:                                                // internal helper functions
         void Initialize();
-        uint32 GetDefaultStateFlags(const FactionEntry* factionEntry) const;
-        bool SetReputation(FactionEntry const* factionEntry, int32 standing, bool incremental);
-        bool SetOneFactionReputation(FactionEntry const* factionEntry, int32 standing, bool incremental);
+        uint32 GetDefaultStateFlags(entry::view::FactionView factionEntry) const;
+        bool SetReputation(entry::view::FactionView factionEntry, int32 standing, bool incremental);
+        bool SetOneFactionReputation(entry::view::FactionView factionEntry, int32 standing, bool incremental);
         void SetVisible(FactionState* faction);
         void SetAtWar(FactionState* faction, bool atWar);
         void SetInactive(FactionState* faction, bool inactive);

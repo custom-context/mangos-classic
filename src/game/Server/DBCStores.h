@@ -98,7 +98,7 @@ extern DBCStorage <DurabilityCostsEntry>         sDurabilityCostsStore;
 extern DBCStorage <DurabilityQualityEntry>       sDurabilityQualityStore;
 extern DBCStorage <EmotesEntry>                  sEmotesStore;
 extern DBCStorage <EmotesTextEntry>              sEmotesTextStore;
-extern DBCStorage <FactionEntry>                 sFactionStore;
+extern DBCStorage <FactionEntry, entry::view::FactionView>                 sFactionStore;
 extern DBCStorage <FactionTemplateEntry>         sFactionTemplateStore;
 extern DBCStorage <GameObjectArtKitEntry>   sGameObjectArtKitStore;
 extern DBCStorage <GameObjectDisplayInfoEntry>   sGameObjectDisplayInfoStore;
@@ -151,7 +151,7 @@ void LoadDBCStores(const std::string& dataPath);
 // script support functions
 DBCStorage <SoundEntriesEntry>          const* GetSoundEntriesStore();
 DBCStorage <SpellRangeEntry>            const* GetSpellRangeStore();
-DBCStorage <FactionEntry>               const* GetFactionStore();
+DBCStorage <FactionEntry, entry::view::FactionView>               const* GetFactionStore();
 DBCStorage <CreatureDisplayInfoEntry>   const* GetCreatureDisplayStore();
 DBCStorage <EmotesEntry>                const* GetEmotesStore();
 DBCStorage <EmotesTextEntry>            const* GetEmotesTextStore();

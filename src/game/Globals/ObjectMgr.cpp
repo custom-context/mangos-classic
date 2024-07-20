@@ -7192,7 +7192,7 @@ void ObjectMgr::LoadReputationRewardRate()
         repRate.creature_rate   = fields[2].GetFloat();
         repRate.spell_rate      = fields[3].GetFloat();
 
-        FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionId);
+        auto factionEntry = sFactionStore.LookupEntry(factionId);
         if (!factionEntry)
         {
             sLog.outErrorDb("Faction (faction.dbc) %u does not exist but is used in `reputation_reward_rate`", factionId);
@@ -7274,7 +7274,7 @@ void ObjectMgr::LoadReputationOnKill()
 
         if (repOnKill.repfaction1)
         {
-            FactionEntry const* factionEntry1 = sFactionStore.LookupEntry(repOnKill.repfaction1);
+            auto factionEntry1 = sFactionStore.LookupEntry(repOnKill.repfaction1);
             if (!factionEntry1)
             {
                 sLog.outErrorDb("Faction (faction.dbc) %u does not exist but is used in `creature_onkill_reputation`", repOnKill.repfaction1);
@@ -7284,7 +7284,7 @@ void ObjectMgr::LoadReputationOnKill()
 
         if (repOnKill.repfaction2)
         {
-            FactionEntry const* factionEntry2 = sFactionStore.LookupEntry(repOnKill.repfaction2);
+            auto factionEntry2 = sFactionStore.LookupEntry(repOnKill.repfaction2);
             if (!factionEntry2)
             {
                 sLog.outErrorDb("Faction (faction.dbc) %u does not exist but is used in `creature_onkill_reputation`", repOnKill.repfaction2);
@@ -7343,7 +7343,7 @@ void ObjectMgr::LoadReputationSpilloverTemplate()
         repTemplate.faction_rate[3]     = fields[11].GetFloat();
         repTemplate.faction_rank[3]     = fields[12].GetUInt32();
 
-        FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionId);
+        auto factionEntry = sFactionStore.LookupEntry(factionId);
 
         if (!factionEntry)
         {
@@ -7351,7 +7351,7 @@ void ObjectMgr::LoadReputationSpilloverTemplate()
             continue;
         }
 
-        if (factionEntry->team == 0)
+        if (factionEntry->GetTeam() == 0)
         {
             sLog.outErrorDb("Faction (faction.dbc) %u in `reputation_spillover_template` does not belong to any team, skipping", factionId);
             continue;
@@ -7361,7 +7361,7 @@ void ObjectMgr::LoadReputationSpilloverTemplate()
         {
             if (repTemplate.faction[i])
             {
-                FactionEntry const* factionSpillover = sFactionStore.LookupEntry(repTemplate.faction[i]);
+                auto factionSpillover = sFactionStore.LookupEntry(repTemplate.faction[i]);
 
                 if (!factionSpillover)
                 {
@@ -7369,7 +7369,7 @@ void ObjectMgr::LoadReputationSpilloverTemplate()
                     continue;
                 }
 
-                if (factionSpillover->reputationListID < 0)
+                if (factionSpillover->GetReputationIndex() < 0)
                 {
                     sLog.outErrorDb("Spillover faction (faction.dbc) %u for faction %u in `reputation_spillover_template` can not be listed for client, and then useless, skipping", repTemplate.faction[i], factionId);
                     continue;
@@ -7382,25 +7382,25 @@ void ObjectMgr::LoadReputationSpilloverTemplate()
             }
         }
 
-        FactionEntry const* factionEntry0 = sFactionStore.LookupEntry(repTemplate.faction[0]);
+        auto factionEntry0 = sFactionStore.LookupEntry(repTemplate.faction[0]);
         if (repTemplate.faction[0] && !factionEntry0)
         {
             sLog.outErrorDb("Faction (faction.dbc) %u does not exist but is used in `reputation_spillover_template`", repTemplate.faction[0]);
             continue;
         }
-        FactionEntry const* factionEntry1 = sFactionStore.LookupEntry(repTemplate.faction[1]);
+        auto factionEntry1 = sFactionStore.LookupEntry(repTemplate.faction[1]);
         if (repTemplate.faction[1] && !factionEntry1)
         {
             sLog.outErrorDb("Faction (faction.dbc) %u does not exist but is used in `reputation_spillover_template`", repTemplate.faction[1]);
             continue;
         }
-        FactionEntry const* factionEntry2 = sFactionStore.LookupEntry(repTemplate.faction[2]);
+        auto factionEntry2 = sFactionStore.LookupEntry(repTemplate.faction[2]);
         if (repTemplate.faction[2] && !factionEntry2)
         {
             sLog.outErrorDb("Faction (faction.dbc) %u does not exist but is used in `reputation_spillover_template`", repTemplate.faction[2]);
             continue;
         }
-        FactionEntry const* factionEntry3 = sFactionStore.LookupEntry(repTemplate.faction[3]);
+        auto factionEntry3 = sFactionStore.LookupEntry(repTemplate.faction[3]);
         if (repTemplate.faction[3] && !factionEntry3)
         {
             sLog.outErrorDb("Faction (faction.dbc) %u does not exist but is used in `reputation_spillover_template`", repTemplate.faction[3]);

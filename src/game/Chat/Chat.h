@@ -809,7 +809,7 @@ class ChatHandler
 
         // Utility methods for commands
         bool ShowAccountListHelper(std::unique_ptr<QueryResult> queryResult, uint32* limit = nullptr, bool title = true, bool error = true);
-        void ShowFactionListHelper(FactionEntry const* factionEntry, LocaleConstant loc, FactionState const* repState = nullptr, Player* target = nullptr);
+        void ShowFactionListHelper(entry::view::FactionView factionEntry, LocaleConstant loc, FactionState const* repState = nullptr, Player* target = nullptr);
         void ShowItemListHelper(uint32 itemId, int loc_idx, Player* target = nullptr);
         void ShowQuestListHelper(uint32 questId, int32 loc_idx, Player* target = nullptr);
         bool ShowPlayerListHelper(std::unique_ptr<QueryResult> queryResult, uint32* limit = nullptr, bool title = true, bool error = true);

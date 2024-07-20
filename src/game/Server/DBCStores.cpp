@@ -92,7 +92,7 @@ DBCStorage <EmotesTextSoundEntry> sEmotesTextSoundStore(EmotesTextSoundEntryfmt)
 
 typedef std::map<uint32, SimpleFactionsList> FactionTeamMap;
 static FactionTeamMap sFactionTeamMap;
-DBCStorage <FactionEntry> sFactionStore(FactionEntryfmt);
+DBCStorage <FactionEntry, entry::view::FactionView> sFactionStore(FactionEntryfmt);
 DBCStorage <FactionTemplateEntry> sFactionTemplateStore(FactionTemplateEntryfmt);
 
 DBCStorage <GameObjectArtKitEntry> sGameObjectArtKitStore(GameObjectArtKitfmt);
@@ -299,10 +299,10 @@ void LoadDBCStores(const std::string& dataPath)
     LoadDBC(availableDbcLocales, bar, bad_dbc_files, sFactionStore,             dbcPath, "Faction.dbc");
     for (uint32 i = 0; i < sFactionStore.GetNumRows(); ++i)
     {
-        FactionEntry const* faction = sFactionStore.LookupEntry(i);
-        if (faction && faction->team)
+        auto faction = sFactionStore.LookupEntry(i);
+        if (faction && faction->GetTeam())
         {
-            SimpleFactionsList& flist = sFactionTeamMap[faction->team];
+            SimpleFactionsList& flist = sFactionTeamMap[faction->GetTeam()];
             flist.push_back(i);
         }
     }
@@ -924,7 +924,7 @@ uint32 GetCreatureModelRace(uint32 model_id)
 // script support functions
 DBCStorage <SoundEntriesEntry>  const* GetSoundEntriesStore()   { return &sSoundEntriesStore;   }
 DBCStorage <SpellRangeEntry>    const* GetSpellRangeStore()     { return &sSpellRangeStore;     }
-DBCStorage <FactionEntry>       const* GetFactionStore()        { return &sFactionStore;        }
+DBCStorage <FactionEntry, entry::view::FactionView>       const* GetFactionStore()        { return &sFactionStore;        }
 DBCStorage <CreatureDisplayInfoEntry> const* GetCreatureDisplayStore() { return &sCreatureDisplayInfoStore; }
 DBCStorage <EmotesEntry>        const* GetEmotesStore()         { return &sEmotesStore;         }
 DBCStorage <EmotesTextEntry>    const* GetEmotesTextStore()     { return &sEmotesTextStore;     }

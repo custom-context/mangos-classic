@@ -199,7 +199,7 @@ bool inline ConditionEntry::Evaluate(WorldObject const* target, Map const* map, 
         }
         case CONDITION_REPUTATION_RANK_MIN:
         {
-            FactionEntry const* faction = sFactionStore.LookupEntry(m_value1);
+            auto faction = sFactionStore.LookupEntry(m_value1);
             return faction && static_cast<Player const*>(target)->GetReputationMgr().GetRank(faction) >= ReputationRank(m_value2);
         }
         case CONDITION_TEAM:
@@ -384,7 +384,7 @@ bool inline ConditionEntry::Evaluate(WorldObject const* target, Map const* map, 
         }
         case CONDITION_REPUTATION_RANK_MAX:
         {
-            FactionEntry const* faction = sFactionStore.LookupEntry(m_value1);
+            auto faction = sFactionStore.LookupEntry(m_value1);
             Player const* player = static_cast<Player const*>(target);
             return faction && player->GetReputationMgr().GetRank(faction) <= ReputationRank(m_value2);
         }
@@ -720,7 +720,7 @@ bool ConditionEntry::IsValid() const
         case CONDITION_REPUTATION_RANK_MIN:
         case CONDITION_REPUTATION_RANK_MAX:
         {
-            FactionEntry const* factionEntry = sFactionStore.LookupEntry(m_value1);
+            auto factionEntry = sFactionStore.LookupEntry(m_value1);
             if (!factionEntry)
             {
                 sLog.outErrorDb("Reputation condition (entry %u, type %u) requires to have reputation non existing faction (%u), skipped", m_entry, m_condition, m_value1);

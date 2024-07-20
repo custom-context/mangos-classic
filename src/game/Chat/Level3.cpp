@@ -4872,7 +4872,7 @@ bool ChatHandler::HandleQuestCompleteCommand(char* args)
         uint32 repValue = pQuest->GetRepObjectiveValue();
         uint32 curRep = player->GetReputationMgr().GetReputation(repFaction);
         if (curRep < repValue)
-            if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(repFaction))
+            if (auto factionEntry = sFactionStore.LookupEntry(repFaction))
                 player->GetReputationMgr().SetReputation(factionEntry, repValue);
     }
 

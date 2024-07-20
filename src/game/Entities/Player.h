@@ -1310,7 +1310,7 @@ class Player : public Unit
         void CastedCreatureOrGO(uint32 entry, ObjectGuid guid, uint32 spell_id, bool original_caster = true);
         void TalkedToCreature(uint32 entry, ObjectGuid guid);
         void MoneyChanged(uint32 count);
-        void ReputationChanged(FactionEntry const* factionEntry);
+        void ReputationChanged(entry::view::FactionView factionEntry);
         bool HasQuestForItem(uint32 itemid) const;
         bool HasQuestForGO(int32 GOId) const;
         void UpdateForQuestWorldObjects();

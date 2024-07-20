@@ -6144,8 +6144,8 @@ bool Unit::IsNeutralToAll() const
     if (!my_faction || !my_faction->faction)
         return true;
 
-    FactionEntry const* raw_faction = sFactionStore.LookupEntry(my_faction->faction);
-    if (raw_faction && raw_faction->reputationListID >= 0)
+    auto raw_faction = sFactionStore.LookupEntry(my_faction->faction);
+    if (raw_faction && raw_faction->GetReputationIndex() >= 0)
         return false;
 
     return my_faction->IsNeutralToAll();

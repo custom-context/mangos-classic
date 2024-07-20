@@ -171,7 +171,7 @@ static ReputationRank GetFactionReaction(FactionTemplateEntry const* thisTemplat
                     if (const ReputationRank* rank = unitPlayer->GetReputationMgr().GetForcedRankIfAny(thisTemplate))
                         return (*rank);
 
-                    const FactionEntry* thisFactionEntry = sFactionStore.LookupEntry(thisTemplate->faction);
+                    auto thisFactionEntry = sFactionStore.LookupEntry(thisTemplate->faction);
                     if (thisFactionEntry && thisFactionEntry->HasReputation())
                     {
                         const ReputationMgr& reputationMgr = unitPlayer->GetReputationMgr();
@@ -237,7 +237,7 @@ ReputationRank Unit::GetReactionTo(Unit const* unit) const
                 if (const ReputationRank* rank = thisPlayer->GetReputationMgr().GetForcedRankIfAny(unitFactionTemplate))
                     return (*rank);
 
-                const FactionEntry* unitFactionEntry = sFactionStore.LookupEntry(unitFactionTemplate->faction);
+                auto unitFactionEntry = sFactionStore.LookupEntry(unitFactionTemplate->faction);
 
                 // If the faction has reputation ranks available, "at war" and contested PVP flags decide outcome
                 if (unitFactionEntry && unitFactionEntry->HasReputation())
@@ -259,7 +259,7 @@ ReputationRank Unit::GetReactionTo(Unit const* unit) const
     {
         if (const FactionTemplateEntry* unitFactionTemplate = unit->GetFactionTemplateEntry())
         {
-            const FactionEntry* unitFactionEntry = sFactionStore.LookupEntry(unitFactionTemplate->faction);
+            auto unitFactionEntry = sFactionStore.LookupEntry(unitFactionTemplate->faction);
             if (unitFactionEntry && unitFactionEntry->HasReputation())
                 reaction = ReputationRank(int32(reaction) + 1);
         }
@@ -1107,7 +1107,7 @@ bool Unit::CanAttackSpell(Unit const* target, SpellEntry const* spellInfo, bool 
                     {
                         if (const FactionTemplateEntry* thisFactionTemplate = GetFactionTemplateEntry())
                         {
-                            const FactionEntry* thisFactionEntry = sFactionStore.LookupEntry(thisFactionTemplate->faction);
+                            auto thisFactionEntry = sFactionStore.LookupEntry(thisFactionTemplate->faction);
                             if (thisFactionEntry && thisFactionEntry->HasReputation())
                                 return unitPlayer->GetReputationMgr().IsAtWar(thisFactionEntry);
                         }
@@ -1182,7 +1182,7 @@ bool Unit::CanAttackInCombat(Unit const* target, bool ignoreFlagsSource, bool ig
                 {
                     if (const FactionTemplateEntry* thisFactionTemplate = GetFactionTemplateEntry())
                     {
-                        FactionEntry const* thisFactionEntry = sFactionStore.LookupEntry(thisFactionTemplate->faction);
+                        auto thisFactionEntry = sFactionStore.LookupEntry(thisFactionTemplate->faction);
                         if (thisFactionEntry && thisFactionEntry->HasReputation() && unitPlayer->GetReputationMgr().IsAtWar(thisFactionEntry))
                             return true;
                     }

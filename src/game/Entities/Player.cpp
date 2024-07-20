@@ -6249,7 +6249,7 @@ void Player::setFactionForRace(uint8 race)
 
 ReputationRank Player::GetReputationRank(uint32 faction) const
 {
-    FactionEntry const* factionEntry = sFactionStore.LookupEntry(faction);
+    auto factionEntry = sFactionStore.LookupEntry(faction);
     return GetReputationMgr().GetRank(factionEntry);
 }
 
@@ -6338,7 +6338,7 @@ void Player::RewardReputation(Creature* victim, float rate)
     {
         int32 donerep1 = CalculateReputationGain(REPUTATION_SOURCE_KILL, Rep->repvalue1, Rep->repfaction1, victim->GetLevel());
         donerep1 = int32(donerep1 * rate);
-        FactionEntry const* factionEntry1 = sFactionStore.LookupEntry(Rep->repfaction1);
+        auto factionEntry1 = sFactionStore.LookupEntry(Rep->repfaction1);
         uint32 current_reputation_rank1 = GetReputationMgr().GetRank(factionEntry1);
         if (factionEntry1 && current_reputation_rank1 <= Rep->reputation_max_cap1)
             GetReputationMgr().ModifyReputation(factionEntry1, donerep1);
@@ -6346,7 +6346,7 @@ void Player::RewardReputation(Creature* victim, float rate)
         // Wiki: Team factions value divided by 2
         if (factionEntry1 && Rep->is_teamaward1)
         {
-            FactionEntry const* team1_factionEntry = sFactionStore.LookupEntry(factionEntry1->team);
+            auto team1_factionEntry = sFactionStore.LookupEntry(factionEntry1->GetTeam());
             if (team1_factionEntry)
                 GetReputationMgr().ModifyReputation(team1_factionEntry, donerep1 / 2);
         }
@@ -6356,7 +6356,7 @@ void Player::RewardReputation(Creature* victim, float rate)
     {
         int32 donerep2 = CalculateReputationGain(REPUTATION_SOURCE_KILL, Rep->repvalue2, Rep->repfaction2, victim->GetLevel());
         donerep2 = int32(donerep2 * rate);
-        FactionEntry const* factionEntry2 = sFactionStore.LookupEntry(Rep->repfaction2);
+        auto factionEntry2 = sFactionStore.LookupEntry(Rep->repfaction2);
         uint32 current_reputation_rank2 = GetReputationMgr().GetRank(factionEntry2);
         if (factionEntry2 && current_reputation_rank2 <= Rep->reputation_max_cap2)
             GetReputationMgr().ModifyReputation(factionEntry2, donerep2);
@@ -6364,7 +6364,7 @@ void Player::RewardReputation(Creature* victim, float rate)
         // Wiki: Team factions value divided by 2
         if (factionEntry2 && Rep->is_teamaward2)
         {
-            FactionEntry const* team2_factionEntry = sFactionStore.LookupEntry(factionEntry2->team);
+            auto team2_factionEntry = sFactionStore.LookupEntry(factionEntry2->GetTeam());
             if (team2_factionEntry)
                 GetReputationMgr().ModifyReputation(team2_factionEntry, donerep2 / 2);
         }
@@ -6384,7 +6384,7 @@ void Player::RewardReputation(Quest const* pQuest)
         {
             int32 rep = CalculateReputationGain(REPUTATION_SOURCE_QUEST,  pQuest->RewRepValue[i], pQuest->RewRepFaction[i], GetQuestLevelForPlayer(pQuest));
 
-            if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(pQuest->RewRepFaction[i]))
+            if (auto factionEntry = sFactionStore.LookupEntry(pQuest->RewRepFaction[i]))
                 GetReputationMgr().ModifyReputation(factionEntry, rep);
         }
     }
@@ -12402,7 +12402,7 @@ void Player::AddQuest(Quest const* pQuest, Object* questGiver)
     }
 
     if (pQuest->GetRepObjectiveFaction())
-        if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(pQuest->GetRepObjectiveFaction()))
+        if (auto factionEntry = sFactionStore.LookupEntry(pQuest->GetRepObjectiveFaction()))
             GetReputationMgr().SetVisible(factionEntry);
 
     uint32 qtime = 0;
@@ -13661,7 +13661,7 @@ void Player::MoneyChanged(uint32 count)
     }
 }
 
-void Player::ReputationChanged(FactionEntry const* factionEntry)
+void Player::ReputationChanged(entry::view::FactionView factionEntry)
 {
     for (int i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
@@ -13669,7 +13669,7 @@ void Player::ReputationChanged(FactionEntry const* factionEntry)
         {
             if (Quest const* qInfo = sObjectMgr.GetQuestTemplate(questid))
             {
-                if (qInfo->GetRepObjectiveFaction() == factionEntry->ID)
+                if (qInfo->GetRepObjectiveFaction() == factionEntry->GetID())
                 {
                     QuestStatusData& q_status = mQuestStatus[questid];
                     if (q_status.m_status == QUEST_STATUS_INCOMPLETE)
