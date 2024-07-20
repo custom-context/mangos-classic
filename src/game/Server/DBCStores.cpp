@@ -104,7 +104,7 @@ DBCStorage <GMSurveyEntry> sGMSurveySurveysStore(GMSurveySurveysfmt);
 DBCStorage <GMTicketCategoryEntry, entry::view::GMTicketCategoryView> sGMTicketCategoryStore(GMTicketCategoryfmt);
 
 DBCStorage <ItemBagFamilyEntry>           sItemBagFamilyStore(ItemBagFamilyfmt);
-DBCStorage <ItemClassEntry>               sItemClassStore(ItemClassfmt);
+DBCStorage <ItemClassEntry, entry::view::ItemClassView>               sItemClassStore(ItemClassfmt);
 // DBCStorage <ItemDisplayInfoEntry> sItemDisplayInfoStore(ItemDisplayTemplateEntryfmt); -- not used currently
 DBCStorage <ItemRandomPropertiesEntry> sItemRandomPropertiesStore(ItemRandomPropertiesfmt);
 DBCStorage <ItemSetEntry> sItemSetStore(ItemSetEntryfmt);
