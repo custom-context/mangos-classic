@@ -5177,7 +5177,7 @@ void ObjectMgr::LoadInstanceEncounters()
         bar.step();
 
         uint32 entry = fields[0].GetUInt32();
-        DungeonEncounterEntry const* dungeonEncounter = sDungeonEncounterStore.LookupEntry<DungeonEncounterEntry>(entry);
+        auto dungeonEncounter = sDungeonEncounterStore.LookupView<entry::view::DungeonEncounterView>(entry);
 
         if (!dungeonEncounter)
         {
@@ -5194,7 +5194,7 @@ void ObjectMgr::LoadInstanceEncounters()
                 CreatureInfo const* cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(creditEntry);
                 if (!cInfo)
                 {
-                    sLog.outErrorDb("Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounter->encounterName[0]);
+                    sLog.outErrorDb("Table `instance_encounters` has an invalid creature (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounter->GetEncounterName(0));
                     continue;
                 }
                 break;
@@ -5204,7 +5204,7 @@ void ObjectMgr::LoadInstanceEncounters()
                 if (!sSpellTemplate.LookupEntry<SpellEntry>(creditEntry))
                 {
                     // skip spells that aren't in dbc for now
-                    // sLog.outErrorDb("Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounter->encounterName[0]);
+                    // sLog.outErrorDb("Table `instance_encounters` has an invalid spell (entry %u) linked to the encounter %u (%s), skipped!", creditEntry, entry, dungeonEncounter->GetEncounterName(0));
                     continue;
                 }
                 break;
@@ -5212,13 +5212,13 @@ void ObjectMgr::LoadInstanceEncounters()
             case ENCOUNTER_CREDIT_SCRIPT:
                 break;
             default:
-                sLog.outErrorDb("Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounter->encounterName[0]);
+                sLog.outErrorDb("Table `instance_encounters` has an invalid credit type (%u) for encounter %u (%s), skipped!", creditType, entry, dungeonEncounter->GetEncounterName(0));
                 continue;
         }
         uint32 lastEncounterDungeon = fields[3].GetUInt32();
 
         m_DungeonEncounters.emplace(creditEntry, DungeonEncounter(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
-        m_DungeonEncountersByMap.emplace(dungeonEncounter->mapId, DungeonEncounter(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
+        m_DungeonEncountersByMap.emplace(dungeonEncounter->GetMapID(), DungeonEncounter(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
     }
     while (queryResult->NextRow());
 
@@ -8040,9 +8040,9 @@ bool ObjectMgr::IsEncounter(uint32 creditEntry, uint32 mapId) const
 
     for (auto entryItr = bounds.first; entryItr != bounds.second; ++entryItr)
     {
-        auto dbcEntry = entryItr->second.dbcEntry;
+        auto entryView = entryItr->second.entryView;
 
-        if (entryItr->second.creditType == ENCOUNTER_CREDIT_KILL_CREATURE && dbcEntry->mapId == mapId)
+        if (entryItr->second.creditType == ENCOUNTER_CREDIT_KILL_CREATURE && entryView->GetMapID() == mapId)
             return true;
     }
     return false;

@@ -117,6 +117,13 @@ class SQLStorage : public SQLStorageBase
             return reinterpret_cast<T const*>(m_Index[id]);
         }
 
+        template<class View>
+        View LookupView(uint32 id) const
+        {
+            static_assert(std::is_constructible_v<View, View::DBCStruct const*>, "View must be constructible from its DBCStruct pointer");
+            return View{typename LookupEntry<View::DBCStruct>(id)};
+        }
+
         void Load(bool error_at_empty = true);
 
         void EraseEntry(uint32 id);

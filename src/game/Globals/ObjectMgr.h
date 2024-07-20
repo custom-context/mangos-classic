@@ -309,9 +309,9 @@ struct PetCreateSpellEntry
 
 struct DungeonEncounter
 {
-    DungeonEncounter(DungeonEncounterEntry const* _dbcEntry, EncounterCreditType _creditType, uint32 _creditEntry, uint32 _lastEncounterDungeon)
-        : dbcEntry(_dbcEntry), creditType(_creditType), creditEntry(_creditEntry), lastEncounterDungeon(_lastEncounterDungeon) { }
-    DungeonEncounterEntry const* dbcEntry;
+    DungeonEncounter(entry::view::DungeonEncounterView _entryView, EncounterCreditType _creditType, uint32 _creditEntry, uint32 _lastEncounterDungeon)
+        : entryView(_entryView), creditType(_creditType), creditEntry(_creditEntry), lastEncounterDungeon(_lastEncounterDungeon) { }
+    entry::view::DungeonEncounterView entryView;
     EncounterCreditType creditType;
     uint32 creditEntry;
     uint32 lastEncounterDungeon;

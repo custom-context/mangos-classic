@@ -32,12 +32,12 @@ void WorldStateVariableManager::Initialize(uint32 completedEncounterMask)
     auto bounds = sObjectMgr.GetDungeonEncounterBoundsByMap(m_owner->GetId());
     for (auto itr = bounds.first; itr != bounds.second; ++itr)
     {
-        DungeonEncounterEntry const* encounter = (*itr).second.dbcEntry;
+        auto encounter = (*itr).second.entryView;
 
-        if (encounter->CompleteWorldStateID) // use official data whenever available
-            SetVariable(encounter->CompleteWorldStateID, ((1 << encounter->encounterIndex) & completedEncounterMask) != 0);
+        if (encounter->GetCompleteWorldStateID()) // use official data whenever available
+            SetVariable(encounter->GetCompleteWorldStateID(), ((1 << encounter->GetEncounterIndex()) & completedEncounterMask) != 0);
         else // phase this out eventually
-            SetEncounterVariable(encounter->Id, ((1 << encounter->encounterIndex) & completedEncounterMask) != 0);
+            SetEncounterVariable(encounter->GetID(), ((1 << encounter->GetEncounterIndex()) & completedEncounterMask) != 0);
     }
 }
 

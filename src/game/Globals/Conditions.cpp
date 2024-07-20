@@ -399,15 +399,15 @@ bool inline ConditionEntry::Evaluate(WorldObject const* target, Map const* map, 
             }
 
             uint32 completedEncounterMask = ((DungeonMap*)map)->GetPersistanceState()->GetCompletedEncountersMask();
-            DungeonEncounterEntry const* dbcEntry1 = sDungeonEncounterStore.LookupEntry<DungeonEncounterEntry>(m_value1);
-            DungeonEncounterEntry const* dbcEntry2 = sDungeonEncounterStore.LookupEntry<DungeonEncounterEntry>(m_value2);
+            auto dbcEntry1 = sDungeonEncounterStore.LookupView<entry::view::DungeonEncounterView>(m_value1);
+            auto dbcEntry2 = sDungeonEncounterStore.LookupView<entry::view::DungeonEncounterView>(m_value2);
             // Check that on proper map
-            if (dbcEntry1->mapId != map->GetId())
+            if (dbcEntry1->GetMapID() != map->GetId())
             {
                 sLog.outErrorDb("CONDITION_COMPLETED_ENCOUNTER (entry %u, DungeonEncounterEntry %u) is used on wrong map (used on Map %u) by %s", m_entry, m_value1, target->GetMapId(), target->GetGuidStr().c_str());
                 return false;
             }
-            return (completedEncounterMask & ((dbcEntry1 ? 1 << dbcEntry1->encounterIndex : 0) | (dbcEntry2 ? 1 << dbcEntry2->encounterIndex : 0))) != 0;
+            return (completedEncounterMask & ((dbcEntry1 ? 1 << dbcEntry1->GetEncounterIndex() : 0) | (dbcEntry2 ? 1 << dbcEntry2->GetEncounterIndex() : 0))) != 0;
         }
         case CONDITION_LAST_WAYPOINT:
         {
@@ -900,8 +900,8 @@ bool ConditionEntry::IsValid() const
         }
         case CONDITION_COMPLETED_ENCOUNTER:
         {
-            DungeonEncounterEntry const* dbcEntry1 = sDungeonEncounterStore.LookupEntry<DungeonEncounterEntry>(m_value1);
-            DungeonEncounterEntry const* dbcEntry2 = sDungeonEncounterStore.LookupEntry<DungeonEncounterEntry>(m_value2);
+            auto dbcEntry1 = sDungeonEncounterStore.LookupView<entry::view::DungeonEncounterView>(m_value1);
+            auto dbcEntry2 = sDungeonEncounterStore.LookupView<entry::view::DungeonEncounterView>(m_value2);
             if (!dbcEntry1)
             {
                 sLog.outErrorDb("Completed Encounter condition (entry %u, type %u) has an unknown DungeonEncounter entry %u defined (in value1), skipping.", m_entry, m_condition, m_value1);
@@ -912,7 +912,7 @@ bool ConditionEntry::IsValid() const
                 sLog.outErrorDb("Completed Encounter condition (entry %u, type %u) has an unknown DungeonEncounter entry %u defined (in value2), skipping.", m_entry, m_condition, m_value2);
                 return false;
             }
-            if (dbcEntry2 && dbcEntry1->mapId != dbcEntry2->mapId)
+            if (dbcEntry2 && dbcEntry1->GetMapID() != dbcEntry2->GetMapID())
             {
                 sLog.outErrorDb("Completed Encounter condition (entry %u, type %u) has different mapIds for both encounters, skipping.", m_entry, m_condition);
                 return false;
